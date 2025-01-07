@@ -24,6 +24,11 @@ const Home = () => {
       <Head>
         <title>ASBI News</title>
         <meta name="description" content="Stay updated with the latest news" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
+          crossOrigin="anonymous"
+        ></script>
       </Head>
 
       {/* Header */}
@@ -39,20 +44,6 @@ const Home = () => {
       {/* Main Content */}
       <main className="container mx-auto py-4 px-28">
         {/* Ad Space */}
-        <div className="ad-space">
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-          ></script>
-          <ins
-            className="adsbygoogle"
-            style={{ display: "block" }}
-            data-ad-client="ca-pub-1465977632288270"
-            data-ad-slot="1465977632288270"
-            data-ad-format="auto"
-          ></ins>
-          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-        </div>
         <div className="w-full mb-6 flex justify-center items-center">
           <div className="bg-gray-200 text-gray-700 text-center py-4 rounded-lg w-1/2">
             <p>Your Ad Here</p>
