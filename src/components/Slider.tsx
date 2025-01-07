@@ -41,7 +41,7 @@ const BannerSlider: React.FC = () => {
             <img
               src={banner.image}
               alt={`Banner ${banner.id}`}
-              className="w-full h-auto object-cover"
+              className="w-full lg:h-auto h-[200px] object-cover"
             />
           </Link>
         ))}
