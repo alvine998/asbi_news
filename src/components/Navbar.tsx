@@ -28,7 +28,9 @@ export default function Navbar() {
     <div>
       <header className="bg-blue-600 text-white py-2 lg:px-28 px-2">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">ASBI News</h1>
+          <Link href={"/"}>
+            <h1 className="text-xl font-bold">ASBI News</h1>
+          </Link>
           <nav className="space-x-4 lg:block hidden">
             <Input placeholder="Cari berita disini..." />
           </nav>
@@ -61,19 +63,25 @@ export default function Navbar() {
           <h2 className="text-xl font-bold mb-4">Menu</h2>
           <ul>
             <li className="mb-2">
-              <a href="#" className="hover:text-gray-700">
+              <Link
+                href="/"
+                onClick={() => {
+                  setIsOpen(false);
+                }}
+                className="hover:text-gray-700"
+              >
                 Beranda
-              </a>
+              </Link>
             </li>
             <li className="mb-2">
-              <a href="#" className="hover:text-gray-700">
+              <Link href="#" className="hover:text-gray-700">
                 Tentang Kami
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-700">
+              <Link href="#" className="hover:text-gray-700">
                 Kontak Kami
-              </a>
+              </Link>
             </li>
           </ul>
           <h2 className="text-xl font-bold mb-4 mt-4">Kategori Berita</h2>
@@ -102,7 +110,13 @@ export default function Navbar() {
         </div>
         <div className=" mb-8 lg:flex hidden lg:gap-4 gap-2 w-full justify-center items-center border-b-2 border-t-2 border-b-gray-700 border-t-gray-700 overflow-x-auto">
           {categories.map((category) => (
-            <Link href={`/category/${category.name}`} onClick={()=>{setIsOpen(false)}} key={category.id}>
+            <Link
+              href={`/category/${category.name}`}
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              key={category.id}
+            >
               <button
                 className={`${
                   params?.category_name === category.name

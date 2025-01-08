@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Main Content */}
-      <main className="container mx-auto py-4 lg:px-28 px-4">
+      <main className="container mx-auto py-4 lg:px-4 px-4">
         <BannerSlider />
         <div className="mb-8 flex lg:flex-row flex-col justify-between w-full mt-4 gap-6">
           {/* Column 1 */}
