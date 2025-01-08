@@ -1,3 +1,4 @@
+import DashboardLayout from "@/components/admin/Layout";
 import Layout from "@/components/Layout";
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
@@ -18,6 +19,11 @@ export default function App({
         </Layout>
       )}
       {pathname?.includes("login") && <Component {...pageProps} />}
+      {pathname?.includes("admin") && (
+        <DashboardLayout>
+          <Component {...pageProps} />
+        </DashboardLayout>
+      )}
     </SessionProvider>
   );
 }
