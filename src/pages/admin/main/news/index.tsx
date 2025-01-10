@@ -14,6 +14,7 @@ import {
   updateCategory,
 } from "@/pages/api/category";
 import { deleteNews, getNews } from "@/pages/api/news";
+import { INews } from "@/types/news";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/router";
@@ -29,25 +30,22 @@ const News: NextPageWithLayout = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterText, setFilterText] = useState<string>("");
   const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Firebase Database Reference
   const db = getDatabase();
 
   const fetchNews = async () => {
+    setLoading(true);
     const data: any = await getNews();
     setNews(data);
     setFiltered(data); // Set initial filtered categories
+    setLoading(false);
   };
 
   const fetchCategories = async () => {
     const data: any = await getCategories();
     setCategories(data);
-  };
-
-  const handleUpdate = async (values: Record<string, any>) => {
-    await updateCategory(data?.id, values);
-    fetchNews();
-    closeModal();
   };
 
   const handleDelete = async (e: any) => {
@@ -65,41 +63,54 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Kategori",
-      selector: (row: any) =>
+      selector: (row: INews) =>
         categories?.find((c: any) => c.id === row.category)?.name,
       sortable: true,
     },
     {
       name: "Deskripsi",
-      selector: (row: any) => row.description,
+      selector: (row: INews) => row.description,
       sortable: true,
     },
     {
       name: "Penulis",
-      selector: (row: any) => row.author,
+      selector: (row: INews) => row.author,
       sortable: true,
     },
     {
       name: "Editor",
-      selector: (row: any) => row.editor,
+      selector: (row: INews) => row.editor,
       sortable: true,
     },
     {
       name: "Kata Kunci",
-      selector: (row: any) => row.keywords?.join(", "),
+      selector: (row: INews) => row.keywords?.join(", "),
+      sortable: true,
+    },
+    {
+      name: "Dilihat",
+      selector: (row: INews) => row.viewers + "x",
+      sortable: true,
+    },
+    {
+        name: "Headline",
+        selector: (row: INews) => row.headline == 1 ? "Ya" : "Tidak",
+        sortable: true,
+      },
+    {
+      name: "Status",
+      selector: (row: INews) => row.status,
       sortable: true,
     },
     {
       name: "Aksi",
-      selector: (row: any) => (
+      selector: (row: INews) => (
         <div>
           <button
             className="text-green-500"
             title="Ubah"
             onClick={() => {
-              openModal();
-              setData(row);
-              setKey("update");
+              router.push(`/admin/main/news/${row.id}/edit`);
             }}
           >
             <PencilIcon className="w-6 h-6" />
@@ -187,6 +198,7 @@ const News: NextPageWithLayout = () => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         itemsPerPage={itemsPerPage}
         dataLength={filtered.length}
+        loading={loading}
       />
 
       {isOpen && key === "delete" && (

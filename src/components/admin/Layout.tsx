@@ -58,6 +58,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <nav className="flex-1 p-4 space-y-2">
           {navs.map((nav) => (
             <Link
+              key={nav.href}
               href={nav.href}
               className={`p-1 px-2 rounded hover:bg-blue-700 flex items-center gap-2 ${
                 router.pathname?.includes(nav.href) ? "bg-blue-700" : ""

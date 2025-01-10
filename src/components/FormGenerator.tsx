@@ -91,7 +91,11 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
     }
   };
 
-  const handleChangeEditor = (setEditorValue: any, value: string, name: string) => {
+  const handleChangeEditor = (
+    setEditorValue: any,
+    value: string,
+    name: string
+  ) => {
     setEditorValue(value);
     setFormData((prev) => ({
       ...prev,
@@ -116,6 +120,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
               id={field.name}
               name={field.name}
               onChange={handleChange}
+              value={field.defaultValue}
               required={field.required}
               className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -150,7 +155,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
           ) : field.type === "keywords" ? (
             <>
               <KeywordInput
-                value={formData[field.name] || []}
+                value={field.defaultValue || formData[field.name] || []}
                 onChange={(keywords) =>
                   handleKeywordsChange(field.name, keywords)
                 }
@@ -168,14 +173,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
                 type={"file"}
                 name={field.name}
                 onChange={handleFileChange}
-                required={field.required}
                 accept={field.accept}
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div>
-                {base64Image && (
+                {(base64Image || field.defaultValue) && (
                   <img
-                    src={base64Image}
+                    src={base64Image || field.defaultValue}
                     alt="Preview"
                     className="mt-2 w-auto h-auto"
                   />

@@ -1,5 +1,5 @@
 import { database } from "@/config/firebase";
-import { ref, push, set, get, update, remove, query, orderByChild, equalTo } from "firebase/database";
+import { ref, push, set, get, update, remove, query, orderByChild, equalTo, increment } from "firebase/database";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -67,6 +67,39 @@ export const getNews = async () => {
             pauseOnHover: true,
             draggable: true,
         });
+    }
+};
+
+export const getSingleNewsByID = async (newsId: string) => {
+    const newsRef = ref(database, `news/${newsId}`);
+
+    try {
+        const snapshot = await get(newsRef);
+
+        if (snapshot.exists()) {
+            return { id: newsId, ...snapshot.val() };
+        } else {
+            toast.error("News not found.", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching single news:", error);
+        toast.error("Failed to fetch news. Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        return null;
     }
 };
 
@@ -169,6 +202,30 @@ export const updateNews = async (id: string, updatedFields: any) => {
         });
     }
 };
+
+export const updateViewers = async (newsId: string) => {
+    const newsRef = ref(database, `news/${newsId}`);
+
+    try {
+      // Get current viewers count (optional for additional logic)
+      const snapshot = await get(newsRef);
+      if (snapshot.exists()) {
+        const currentData = snapshot.val();
+
+        // Increment the viewer count
+        await update(newsRef, {
+          viewers: increment(1),
+        });
+      } else {
+        // If news entry doesn't exist, create it with 1 viewer
+        await update(newsRef, {
+          viewers: 1,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update viewers count:", error);
+    }
+  };
 
 // Delete a News
 export const deleteNews = async (id: string) => {

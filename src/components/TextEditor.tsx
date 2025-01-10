@@ -13,7 +13,7 @@ interface Props {
   handleChange: any
 }
 
-const TextEditor = ({ editorValue = "Ketik disini...", setEditorValue, placeholder, handleChange }: Props) => {
+const TextEditor = ({ editorValue, setEditorValue, placeholder, handleChange }: Props) => {
 
   return (
     <div>

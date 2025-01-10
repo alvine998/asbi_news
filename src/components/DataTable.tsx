@@ -8,6 +8,7 @@ interface Props {
   itemsPerPage?: number;
   handlePageChange?: (page: number) => void;
   handleRowsPerPageChange?: (rowsPerPage: number) => void;
+  loading?: boolean;
 }
 
 // Define custom styles
@@ -24,6 +25,7 @@ const customStyles: any = {
   rows: {
     style: {
       minHeight: "56px", // override the row height
+      maxWidth: "auto",
     },
   },
   headCells: {
@@ -42,7 +44,7 @@ const customStyles: any = {
   },
 };
 
-const Table = ({ columns, data, handlePageChange, handleRowsPerPageChange, itemsPerPage, dataLength }: Props) => {
+const Table = ({ columns, data, handlePageChange, handleRowsPerPageChange, itemsPerPage, dataLength, loading }: Props) => {
   const [show, setShow] = useState<boolean>(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -64,6 +66,7 @@ const Table = ({ columns, data, handlePageChange, handleRowsPerPageChange, items
           paginationRowsPerPageOptions={[10, 20, 50]}
           onChangePage={handlePageChange}
           onChangeRowsPerPage={handleRowsPerPageChange}
+          progressPending={loading}
           highlightOnHover
           pointerOnHover
           responsive

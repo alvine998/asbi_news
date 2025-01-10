@@ -106,8 +106,24 @@ export default function Navbar() {
             {/* Replace with an actual ad script or image */}
           </div>
         </div>
-        <div className=" mb-8 lg:flex hidden lg:gap-4 gap-2 w-full justify-center items-center border-b-2 border-t-2 border-b-gray-700 border-t-gray-700 overflow-x-auto">
-          {categories.map((category) => (
+        <div className=" mb-8 lg:flex hidden lg:gap-2 gap-2 w-full justify-center items-center border-b-2 border-t-2 border-b-gray-700 border-t-gray-700 overflow-x-auto">
+          <Link
+            href={`/`}
+            onClick={() => {
+              setIsOpen(false);
+            }}
+          >
+            <button
+              className={`${
+                params?.category_name === "/"
+                  ? "text-blue-700"
+                  : "text-black hover:text-blue-700"
+              } font-semibold lg:px-4 px-0 py-1 rounded-md  duration-200 transition-colors`}
+            >
+              Beranda
+            </button>
+          </Link>
+          {categories?.slice(0, 12).map((category) => (
             <Link
               href={`/category/${category.name}`}
               onClick={() => {

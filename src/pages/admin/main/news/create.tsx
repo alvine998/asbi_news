@@ -4,6 +4,7 @@ import Button from "@/components/Button";
 import Table from "@/components/DataTable";
 import FormGenerator from "@/components/FormGenerator";
 import Input from "@/components/Input";
+import Loader from "@/components/Loader";
 import Modal from "@/components/Modal";
 import { useModal } from "@/hooks/useModal";
 import type { NextPageWithLayout } from "@/pages/_app";
@@ -21,13 +22,16 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const CreateNews: NextPageWithLayout = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [categories, setCategories] = useState<any[]>([]);
   const router = useRouter();
   const db = getDatabase();
 
   const fetchCategories = async () => {
+    setLoading(true);
     const data: any = await getCategories();
     setCategories(data);
+    setLoading(false);
   };
   useEffect(() => {
     fetchCategories();
@@ -42,6 +46,7 @@ const CreateNews: NextPageWithLayout = () => {
       viewers: 0,
       status: "draft",
       headline: 0,
+      publishedAt: "",
     };
     await createNews(payload);
     router.push("/admin/main/news");
@@ -112,7 +117,12 @@ const CreateNews: NextPageWithLayout = () => {
 
   return (
     <div className="bg-white p-4 rounded">
-      <FormGenerator fields={NewsForm} onSubmit={handleCreate} />
+        <h1 className="text-2xl font-bold">Buat Berita</h1>
+      {loading ? (
+        <Loader />
+      ) : (
+        <FormGenerator fields={NewsForm} onSubmit={handleCreate} />
+      )}
     </div>
   );
 };
