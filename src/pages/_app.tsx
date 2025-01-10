@@ -1,29 +1,28 @@
-import DashboardLayout from "@/components/admin/Layout";
-import Layout from "@/components/Layout";
 import "@/styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
-import { useParams, usePathname } from "next/navigation";
+import type { ReactElement, ReactNode } from "react";
+import type { NextPage } from "next";
+
+// Define the `getLayout` type for Next.js pages
+export type NextPageWithLayout = NextPage & {
+  getLayout?: (page: ReactElement) => ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps) {
-  const pathname = usePathname();
+}: AppPropsWithLayout) {
+  // Use the page's `getLayout` function if available, or fallback to the default layout
+  const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
     <SessionProvider session={session}>
-      {!pathname?.includes("admin") && (
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      )}
-      {pathname?.includes("login") && <Component {...pageProps} />}
-      {pathname?.includes("admin") && (
-        <DashboardLayout>
-          <Component {...pageProps} />
-        </DashboardLayout>
-      )}
+      {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   );
 }

@@ -13,57 +13,80 @@ import {
   getCategories,
   updateCategory,
 } from "@/pages/api/category";
+import { deleteNews, getNews } from "@/pages/api/news";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const Category: NextPageWithLayout = () => {
+const News: NextPageWithLayout = () => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
+  const [news, setNews] = useState<any[]>([]);
+  const [filtered, setFiltered] = useState<any[]>([]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [filterText, setFilterText] = useState<string>("");
+  const [categories, setCategories] = useState<any[]>([]);
+
   // Firebase Database Reference
   const db = getDatabase();
+
+  const fetchNews = async () => {
+    const data: any = await getNews();
+    setNews(data);
+    setFiltered(data); // Set initial filtered categories
+  };
 
   const fetchCategories = async () => {
     const data: any = await getCategories();
     setCategories(data);
-    setFilteredCategories(data); // Set initial filtered categories
-  };
-
-  const handleCreate = async (values: Record<string, any>) => {
-    await createCategory(values);
-    fetchCategories();
-    closeModal();
   };
 
   const handleUpdate = async (values: Record<string, any>) => {
     await updateCategory(data?.id, values);
-    fetchCategories();
+    fetchNews();
     closeModal();
   };
 
   const handleDelete = async (e: any) => {
     e.preventDefault();
-    await deleteCategory(data?.id);
-    fetchCategories();
+    await deleteNews(data?.id);
+    fetchNews();
     closeModal();
   };
 
   const columns = [
     {
-      name: "Nama",
-      selector: (row: any) => row.name,
+      name: "Judul",
+      selector: (row: any) => row.title,
+      sortable: true,
+    },
+    {
+      name: "Kategori",
+      selector: (row: any) =>
+        categories?.find((c: any) => c.id === row.category)?.name,
       sortable: true,
     },
     {
       name: "Deskripsi",
       selector: (row: any) => row.description,
+      sortable: true,
+    },
+    {
+      name: "Penulis",
+      selector: (row: any) => row.author,
+      sortable: true,
+    },
+    {
+      name: "Editor",
+      selector: (row: any) => row.editor,
+      sortable: true,
+    },
+    {
+      name: "Kata Kunci",
+      selector: (row: any) => row.keywords?.join(", "),
       sortable: true,
     },
     {
@@ -98,43 +121,22 @@ const Category: NextPageWithLayout = () => {
     },
   ];
 
-  const CategoryForm: any = [
-    {
-      name: "name",
-      label: "Nama Kategori",
-      type: "text",
-      placeholder: "Masukkan Nama Kategori",
-      required: true,
-      defaultValue: data?.name,
-    },
-    {
-      name: "description",
-      label: "Deskripsi",
-      type: "textarea",
-      placeholder: "Masukkan Deskripsi",
-      required: true,
-      defaultValue: data?.description,
-    },
-  ];
-
   useEffect(() => {
+    fetchNews();
     fetchCategories();
   }, [db]);
 
-  // Filter categories based on search query from the URL
   useEffect(() => {
     const { query }: any = router.query; // Extract 'query' from the URL
     if (query) {
-      const filtered = categories.filter((category) =>
-        category.name
-          .toLowerCase()
-          .includes(query?.search.toString().toLowerCase())
+      const filtered = news.filter((item) =>
+        item.name.toLowerCase().includes(query?.search.toString().toLowerCase())
       );
-      setFilteredCategories(filtered);
+      setFiltered(filtered);
     } else {
-      setFilteredCategories(categories); // If no query, show all categories
+      setFiltered(news); // If no query, show all news
     }
-  }, [router.query, categories]); // Run effect whenever the query or categories change
+  }, [router.query, news]); // Run effect whenever the query or categories change
 
   // Handle change in page
   const handlePageChange = (page: number) => {
@@ -150,37 +152,32 @@ const Category: NextPageWithLayout = () => {
   // Filter data by the search text
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterText(event.target.value);
-    const filtered = categories.filter((category) =>
-      category.name.toLowerCase().includes(event.target.value.toLowerCase())
+    const filtered = news.filter((item) =>
+      item.name.toLowerCase().includes(event.target.value.toLowerCase())
     );
-    setFilteredCategories(filtered);
+    setFiltered(filtered);
   };
 
   // Calculate the data to be displayed based on the current page and rows per page
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredCategories.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div>
       <div className="flex px-4 items-center lg:flex-row flex-col justify-between w-full gap-2">
         <Input
-          placeholder="Cari Kategori..."
+          placeholder="Cari Berita..."
           type="search"
           onChange={handleFilterChange}
           className="lg:w-auto w-full"
         />
         <Button
           onClick={() => {
-            openModal();
-            setData(null);
-            setKey("create");
+            router.push(`/admin/main/news/create`);
           }}
         >
-          Tambah Kategori
+          Tambah Berita
         </Button>
       </div>
       <Table
@@ -189,25 +186,13 @@ const Category: NextPageWithLayout = () => {
         handlePageChange={handlePageChange}
         handleRowsPerPageChange={handleRowsPerPageChange}
         itemsPerPage={itemsPerPage}
-        dataLength={filteredCategories.length}
+        dataLength={filtered.length}
       />
 
-      {isOpen && (key === "create" || key === "update") && (
-        <Modal
-          isOpen={isOpen}
-          onClose={closeModal}
-          title={`${data?.uuid ? "Ubah" : "Tambah"} Kategori`}
-        >
-          <FormGenerator
-            fields={CategoryForm}
-            onSubmit={data?.uuid ? handleUpdate : handleCreate}
-          />
-        </Modal>
-      )}
       {isOpen && key === "delete" && (
-        <Modal isOpen={isOpen} onClose={closeModal} title={`Hapus Kategori`}>
+        <Modal isOpen={isOpen} onClose={closeModal} title={`Hapus Berita`}>
           <p className="text-center">
-            Apakah anda yakin ingin menghapus kategori ini?
+            Apakah anda yakin ingin menghapus berita ini?
           </p>
           <form onSubmit={handleDelete}>
             <div className="flex justify-end gap-2 w-full mt-2">
@@ -220,6 +205,6 @@ const Category: NextPageWithLayout = () => {
   );
 };
 
-Category.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+News.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default Category;
+export default News;

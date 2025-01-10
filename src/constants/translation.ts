@@ -3,6 +3,9 @@ export const TRANSLATION: any = {
         "category": "Kategori",
         "news": "Berita",
         "structural": "Struktur Organisasi",
-        "profile": "Profil"
+        "profile": "Profil",
+        "dashboard": "Dashboard",
+        "create": "Tambah",
+        "edit": "Ubah"
     }
 }

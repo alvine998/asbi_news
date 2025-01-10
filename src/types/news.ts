@@ -1,10 +1,18 @@
 export interface INews {
     id: string;
     title: string;
-    image: string;
-    content: string;
+    thumbnail: string;
+    content: any;
+    headline: number;
+    slug: string;
+    status: string;
+    category: string;
+    viewers: number;
+    category_name: string;
     author: string;
     editor: string;
-    tags: string[];
+    keywords: string[];
     publishedAt: string;
+    createdAt: string;
+    updatedAt: string;
 }

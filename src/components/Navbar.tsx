@@ -1,28 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "./Input";
 import { AlignJustifyIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { getDatabase } from "firebase/database";
+import { getCategories } from "@/pages/api/category";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [categories, setCategories] = useState<any[]>([]);
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
-  const categories: any[] = [
-    { id: 1, name: "Bisnis" },
-    { id: 2, name: "Teknologi" },
-    { id: 3, name: "Olahraga" },
-    { id: 4, name: "Politik" },
-    { id: 5, name: "Hiburan" },
-    { id: 6, name: "Kesehatan" },
-    { id: 7, name: "Ekonomi" },
-    { id: 8, name: "Sains" },
-    { id: 9, name: "Agama" },
-    { id: 10, name: "Budaya" },
-    { id: 11, name: "Internasional" },
-    { id: 12, name: "Opini" },
-  ];
+  const db = getDatabase();
+
+  const fetchCategories = async () => {
+    const data: any = await getCategories();
+    setCategories(data);
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, [db]);
   const params = useParams();
   return (
     <div>

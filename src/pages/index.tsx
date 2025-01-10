@@ -1,28 +1,30 @@
 // pages/index.tsx
 import Footer from "@/components/Footer";
 import Input from "@/components/Input";
+import Layout from "@/components/Layout";
 import Navbar from "@/components/Navbar";
 import BannerSlider from "@/components/Slider";
 import { AlignJustifyIcon } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { NextPageWithLayout } from "./_app";
+import { getDatabase } from "firebase/database";
+import { getNews } from "./api/news";
 
-const Home = () => {
-  const categories: any[] = [
-    { id: 1, name: "Bisnis" },
-    { id: 2, name: "Teknologi" },
-    { id: 3, name: "Olahraga" },
-    { id: 4, name: "Politik" },
-    { id: 5, name: "Hiburan" },
-    { id: 6, name: "Kesehatan" },
-    { id: 7, name: "Ekonomi" },
-    { id: 8, name: "Sains" },
-    { id: 9, name: "Agama" },
-    { id: 10, name: "Budaya" },
-    { id: 11, name: "Internasional" },
-    { id: 12, name: "Opini" },
-  ];
+const Home: NextPageWithLayout = () => {
+  const [news, setNews] = useState<any[]>([]);
+
+  // Firebase Database Reference
+  const db = getDatabase();
+
+  const fetchNews = async () => {
+    const data: any = await getNews();
+    setNews(data);
+  };
+  useEffect(() => {
+    fetchNews();
+  }, [db]);
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Main Content */}
@@ -37,30 +39,28 @@ const Home = () => {
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* News Card */}
-                {[1, 2, 3].map((newsItem) => (
+                {news?.slice(0, 3).map((newsItem) => (
                   <div
                     key={newsItem}
                     className="bg-white shadow-md rounded-lg overflow-hidden"
                   >
                     <img
-                      src={`https://via.placeholder.com/400x200?text=News+${newsItem}`}
-                      alt={`News ${newsItem}`}
+                      src={newsItem?.thumbnail}
+                      alt={`News ${newsItem?.id}`}
                       className="w-full h-48 object-cover"
                     />
                     <div className="p-4">
                       <h3 className="text-lg font-semibold mb-2">
-                        News Title {newsItem}
+                        {newsItem?.title}
                       </h3>
                       <p className="text-gray-600 mb-4">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua.
+                        {newsItem?.description?.substring(0, 100)}...
                       </p>
                       <Link
-                        href={`/category/news/${newsItem}`}
+                        href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
                         className="text-blue-600 hover:underline font-medium"
                       >
-                        Read more
+                        Baca Selengkapnya
                       </Link>
                     </div>
                   </div>
@@ -188,5 +188,7 @@ const Home = () => {
     </div>
   );
 };
+
+Home.getLayout = (page) => <Layout>{page}</Layout>;
 
 export default Home;
