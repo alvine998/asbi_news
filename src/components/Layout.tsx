@@ -11,6 +11,7 @@ export default function Layout({ children }: any) {
         <title>ASBI News</title>
         <meta name="description" content="Stay updated with the latest news" />
         <meta name="google-site-verification" content="uVxJQ0hfthaSi9m9faH2ieprZZkMiwbiO7OYIKH_ogQ" />
+        <meta name="google-adsense-account" content="ca-pub-1465977632288270"></meta>
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
