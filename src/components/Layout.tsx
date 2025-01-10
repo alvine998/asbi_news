@@ -13,7 +13,7 @@ export default function Layout({ children }: any) {
         <meta name="google-site-verification" content="uVxJQ0hfthaSi9m9faH2ieprZZkMiwbiO7OYIKH_ogQ" />
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-146597763228827"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
           crossOrigin="anonymous"
         ></Script>
       </Head>
