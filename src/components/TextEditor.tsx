@@ -6,13 +6,6 @@ import { type } from "os";
 // Dynamically import ReactQuill to disable SSR (client-side only)
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-interface Props {
-  editorValue: any;
-  setEditorValue: any;
-  placeholder: any;
-  handleChange: any;
-}
-
 const TextEditor = ({
   value,
   onChange,
