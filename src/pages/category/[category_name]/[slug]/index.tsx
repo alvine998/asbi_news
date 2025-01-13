@@ -72,8 +72,11 @@ const DetailNews: NextPageWithLayout = () => {
           <h5 className="text-gray-800 mt-6 text-lg">
             <strong>Editor</strong>: {news?.editor}
           </h5>
+          <h5 className="text-gray-800 mt-2 text-md">
+            <strong>Sumber</strong>: {news?.source}
+          </h5>
           <p className="mt-2 text-black text-lg">Kata Kunci</p>
-          <div className="flex flex-wrap gap-2 mb-8 mt-2">
+          <div className="flex flex-wrap gap-2 mt-2 mb-8">
             {news?.keywords?.map((tag, index) => (
               <span
                 key={index}

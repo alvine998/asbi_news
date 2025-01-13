@@ -84,9 +84,13 @@ const News: NextPageWithLayout = () => {
       sortable: true,
     },
     {
+      name: "Sumber",
+      selector: (row: INews) => row.source || "-",
+      sortable: true,
+    },
+    {
       name: "Kata Kunci",
-      selector: (row: INews) =>
-        row.keywords?.slice(0, 3)?.join(", "),
+      selector: (row: INews) => row.keywords?.slice(0, 3)?.join(", "),
       sortable: true,
     },
     {
@@ -106,7 +110,8 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Tanggal Publish",
-      selector: (row: INews) => moment(row?.publishedAt)?.format("DD-MM-YYYY HH:mm"),
+      selector: (row: INews) =>
+        moment(row?.publishedAt)?.format("DD-MM-YYYY HH:mm"),
       sortable: true,
     },
     {

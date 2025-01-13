@@ -135,6 +135,14 @@ const UpdateNews: NextPageWithLayout = () => {
       defaultValue: news?.editor,
     },
     {
+      name: "source",
+      label: "Sumber",
+      type: "text",
+      placeholder: "Masukkan Sumber",
+      required: true,
+      defaultValue: news?.source || "",
+    },
+    {
       name: "headline",
       label: "Headline",
       type: "select",

@@ -19,7 +19,7 @@ const TextEditor = ({
   const [editorValue, setEditorValue] = useState(value || "");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && editorValue !== "") {
       setShow(true);
     }
   }, []);

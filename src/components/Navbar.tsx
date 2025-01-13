@@ -104,8 +104,9 @@ export default function Navbar() {
       <div className="px-4 lg:px-28 mt-4">
         {/* Ad Space */}
         <div className="w-full mb-6 flex justify-center items-center">
-          <div className="bg-gray-200 text-gray-700 text-center py-4 rounded-lg lg:w-1/2 w-full">
-            <p>Your Ad Here</p>
+          <div className="bg-gray-200 text-gray-700 text-center py-4 rounded-lg lg:w-full w-full">
+            {/* <p>Your Ad Here</p> */}
+            <img src="/images/asbi_ads.jpeg" alt="ads" className="w-full lg:h-[250px] h-[100px]" />
             {/* Replace with an actual ad script or image */}
           </div>
         </div>

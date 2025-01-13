@@ -12,6 +12,7 @@ export interface INews {
     category_name: string;
     author: string;
     editor: string;
+    source: string;
     keywords: string[];
     publishedAt: string;
     createdAt: string;

@@ -108,6 +108,13 @@ const CreateNews: NextPageWithLayout = () => {
       required: true,
     },
     {
+      name: "source",
+      label: "Sumber",
+      type: "text",
+      placeholder: "Masukkan Sumber",
+      required: true,
+    },
+    {
       name: "headline",
       label: "Headline",
       type: "select",
