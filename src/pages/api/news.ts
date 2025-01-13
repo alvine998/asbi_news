@@ -1,5 +1,5 @@
 import { database } from "@/config/firebase";
-import { ref, push, set, get, update, remove, query, orderByChild, equalTo, increment } from "firebase/database";
+import { ref, push, set, get, update, remove, query, orderByChild, equalTo, increment, startAt, limitToFirst } from "firebase/database";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -42,11 +42,28 @@ export const createNews = async (payload: any) => {
 };
 
 // Read news
-export const getNews = async () => {
+export const getNews = async (status?: string, popular?: boolean, category_name?: string) => {
     const newsRef = ref(database, "news");
-    const snapshot = await get(newsRef);
+    let newsQuery: any = newsRef; // Default to fetching all news
 
     try {
+        // Filter by status
+        if (status === "publish" || status === "draft") {
+            newsQuery = query(newsRef, orderByChild("status"), equalTo(status));
+        }
+
+        // Filter by popularity (top 6 most viewed)
+        if (popular) {
+            newsQuery = query(newsRef, orderByChild("viewers"), limitToFirst(6));
+        }
+
+        // Filter by category and status
+        // Handle category-based query
+        if (category_name) {
+            newsQuery = query(newsRef, orderByChild("category_name"), equalTo(category_name));
+        }
+        const snapshot = await get(newsQuery);
+
         if (snapshot.exists()) {
             const data = snapshot.val();
             return Object.keys(data).map((key) => ({
@@ -147,6 +164,84 @@ export const getSingleNews = async (slug: string) => {
     }
 };
 
+export const getHeadlines = async () => {
+    const newsRef = ref(database, `news`);
+
+    try {
+        const newsQuery = query(newsRef, orderByChild("headline"), equalTo("1"));
+        const snapshot = await get(newsQuery);
+
+        if (snapshot.exists()) {
+            const news = snapshot.val();
+            return Object.keys(news).map((key) => ({
+                id: key,
+                ...news[key],
+            }));;
+
+        } else {
+            toast.error("News not found.", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching single news:", error);
+        toast.error("Failed to fetch news. Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        return null;
+    }
+};
+
+export const getNewsByCategory = async (category: string) => {
+    const newsRef = ref(database, `news`);
+
+    try {
+        const newsQuery = query(newsRef, orderByChild("category"), equalTo(category));
+        const snapshot = await get(newsQuery);
+
+        if (snapshot.exists()) {
+            const news = snapshot.val();
+            return Object.keys(news).map((key) => ({
+                id: key,
+                ...news[key],
+            }));;
+
+        } else {
+            toast.error("News not found.", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching single news:", error);
+        toast.error("Failed to fetch news. Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        return null;
+    }
+};
+
 // Update a news
 export const updateNews = async (id: string, updatedFields: any) => {
     if (!id) {
@@ -207,25 +302,25 @@ export const updateViewers = async (newsId: string) => {
     const newsRef = ref(database, `news/${newsId}`);
 
     try {
-      // Get current viewers count (optional for additional logic)
-      const snapshot = await get(newsRef);
-      if (snapshot.exists()) {
-        const currentData = snapshot.val();
+        // Get current viewers count (optional for additional logic)
+        const snapshot = await get(newsRef);
+        if (snapshot.exists()) {
+            const currentData = snapshot.val();
 
-        // Increment the viewer count
-        await update(newsRef, {
-          viewers: increment(1),
-        });
-      } else {
-        // If news entry doesn't exist, create it with 1 viewer
-        await update(newsRef, {
-          viewers: 1,
-        });
-      }
+            // Increment the viewer count
+            await update(newsRef, {
+                viewers: increment(1),
+            });
+        } else {
+            // If news entry doesn't exist, create it with 1 viewer
+            await update(newsRef, {
+                viewers: 1,
+            });
+        }
     } catch (error) {
-      console.error("Failed to update viewers count:", error);
+        console.error("Failed to update viewers count:", error);
     }
-  };
+};
 
 // Delete a News
 export const deleteNews = async (id: string) => {

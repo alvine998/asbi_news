@@ -27,7 +27,7 @@ export default function Navbar() {
       <header className="bg-white shadow py-2 lg:px-28 px-2">
         <div className="container mx-auto flex justify-between items-center">
           <Link href={"/"}>
-            <img src="/images/asbi-logo.png" className="w-full h-10" alt="asbilogo" />
+            <img src="/images/asbi-logo.png" className="w-full lg:h-20 h-14" alt="asbilogo" />
           </Link>
           <nav className="space-x-4 lg:block hidden">
             <Input placeholder="Cari berita disini..." />
@@ -88,6 +88,9 @@ export default function Navbar() {
               <li key={category.id} className="mb-2">
                 <Link
                   href={`/category/${category.name}`}
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
                   className="hover:text-gray-700"
                 >
                   {category.name}

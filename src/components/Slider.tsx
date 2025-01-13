@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import Slider from "react-slick";
 
-const BannerSlider: React.FC = () => {
+const BannerSlider = ({ banners }: { banners: any[] }) => {
   const settings = {
     dots: true,
     infinite: true,
@@ -15,34 +15,20 @@ const BannerSlider: React.FC = () => {
     arrows: false,
   };
 
-  const banners = [
-    {
-      id: 1,
-      image: "https://via.placeholder.com/1200x400?text=Banner+1",
-      link: "/banner1",
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/1200x400?text=Banner+2",
-      link: "/banner2",
-    },
-    {
-      id: 3,
-      image: "https://via.placeholder.com/1200x400?text=Banner+3",
-      link: "/banner3",
-    },
-  ];
-
   return (
     <div className="relative mx-auto w-full max-w-screen-xl overflow-hidden">
       <Slider {...settings}>
-        {banners.map((banner) => (
-          <Link key={banner.id} href={banner.link} className="block">
+        {banners?.map((banner) => (
+          <Link key={banner.id} href={banner.link} className="block w-full">
             <img
-              src={banner.image}
+              src={banner.thumbnail}
               alt={`Banner ${banner.id}`}
-              className="w-full lg:h-auto h-[200px] object-cover"
+              className="w-full lg:h-[500px] h-[200px] object-cover"
             />
+            <h1 className="text-white text-center lg:-mt-20 -mt-10 lg:text-2xl text-xs bg-gray-500 py-2 px-2 absolute rounded">
+              {banner?.title?.substring(0, 100)}{" "}
+              {banner?.title?.length > 100 ? "..." : ""}
+            </h1>
           </Link>
         ))}
       </Slider>
