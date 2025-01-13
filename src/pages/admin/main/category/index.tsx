@@ -196,11 +196,11 @@ const Category: NextPageWithLayout = () => {
         <Modal
           isOpen={isOpen}
           onClose={closeModal}
-          title={`${data?.uuid ? "Ubah" : "Tambah"} Kategori`}
+          title={`${data?.id ? "Ubah" : "Tambah"} Kategori`}
         >
           <FormGenerator
             fields={CategoryForm}
-            onSubmit={data?.uuid ? handleUpdate : handleCreate}
+            onSubmit={data?.id ? handleUpdate : handleCreate}
           />
         </Modal>
       )}

@@ -1,5 +1,5 @@
 import { TRANSLATION } from "@/constants/translation";
-import { BoxIcon, HomeIcon, NewspaperIcon } from "lucide-react";
+import { BoxIcon, HomeIcon, NewspaperIcon, PinIcon } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
@@ -30,6 +30,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       name: "Berita",
       href: "/admin/main/news",
       icon: <NewspaperIcon color="white" />,
+    },
+    {
+      name: "Iklan",
+      href: "/admin/main/ads",
+      icon: <PinIcon color="white" />,
     },
   ];
 
