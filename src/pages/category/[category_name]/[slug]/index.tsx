@@ -26,7 +26,7 @@ const DetailNews: NextPageWithLayout = () => {
       }
       try {
         const fetchedNews = await getSingleNews(params?.slug as string);
-        const otherNews: any = await getNews();
+        const otherNews: any = await getNews("publish");
         setNews(fetchedNews);
         setOtherNews(otherNews);
         await updateViewers(fetchedNews?.id as string);
