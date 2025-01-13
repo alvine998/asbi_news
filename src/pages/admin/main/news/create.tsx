@@ -46,14 +46,11 @@ const CreateNews: NextPageWithLayout = () => {
       viewers: 0,
       status: values.status,
       headline: values.headline ? 1 : 0,
-      publishedAt:
-        values.status === "publish" ? new Date().toISOString() : null,
+      publishedAt: values.status === "publish" ? values?.publishedAt : null,
     };
     await createNews(payload);
     router.push("/admin/main/news");
   };
-
-  const [editorValue, setEditorValue] = useState("Ketik disini...");
 
   const NewsForm: any = [
     {
@@ -133,6 +130,11 @@ const CreateNews: NextPageWithLayout = () => {
       ],
     },
     {
+      name: "publishedAt",
+      label: "Tanggal Publikasi",
+      type: "datetime-local",
+    },
+    {
       name: "keywords",
       label: "Kata Kunci",
       type: "keywords",
@@ -142,6 +144,9 @@ const CreateNews: NextPageWithLayout = () => {
   return (
     <div className="bg-white p-4 rounded">
       <h1 className="text-2xl font-bold">Buat Berita</h1>
+      <Button onClick={() => router.back()} type="button" variant="link" className="my-2">
+        Kembali
+      </Button>
       {loading ? (
         <Loader />
       ) : (

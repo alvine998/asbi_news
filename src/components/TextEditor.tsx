@@ -1,10 +1,9 @@
 // components/Editor.tsx
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { type } from "os";
 
 // Dynamically import ReactQuill to disable SSR (client-side only)
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 const TextEditor = ({
   value,
@@ -16,11 +15,12 @@ const TextEditor = ({
   placeholder: any;
 }) => {
   const [show, setShow] = useState<boolean>(false);
-  const [editorValue, setEditorValue] = useState(value || "");
+  const [editorValue, setEditorValue] = useState(value || "Ketik disini");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && editorValue !== "") {
+    if (typeof window !== "undefined") {
       setShow(true);
+      setEditorValue("Ketik disini")
     }
   }, []);
 
@@ -31,7 +31,7 @@ const TextEditor = ({
 
   return (
     <div>
-      {show && (
+      {show && editorValue !== "" && (
         <ReactQuill
           value={editorValue}
           onChange={handleChange}

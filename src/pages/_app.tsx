@@ -3,7 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 import type { ReactElement, ReactNode } from "react";
 import type { NextPage } from "next";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 
 // Define the `getLayout` type for Next.js pages
 export type NextPageWithLayout = NextPage & {

@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToastContainer } from "react-toastify";
 
 interface DashboardLayoutProps {
@@ -40,6 +40,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       router.push("/admin/login"); // Redirect to login if unauthenticated
     }
   }, [status, router]);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Function to handle clicks outside of the sidebar
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    // Add event listener for clicks
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup listener on component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -48,6 +69,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       </Head>
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
         className={`fixed z-20 inset-y-0 left-0 bg-blue-500 text-white w-64 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform lg:translate-x-0 lg:relative`}
@@ -60,6 +82,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             <Link
               key={nav.href}
               href={nav.href}
+              onClick={() => {
+                setIsSidebarOpen(false);
+              }}
               className={`p-1 px-2 rounded hover:bg-blue-700 flex items-center gap-2 ${
                 router.pathname?.includes(nav.href) ? "bg-blue-700" : ""
               }`}
@@ -86,7 +111,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         {/* Topbar */}
         <header className="bg-white shadow px-4 py-2 flex justify-between items-center">
           <button
-            className={`lg:hidden p-2 text-gray-500 hover:text-gray-800 z-[999] ${isSidebarOpen ? "text-white" :""}`}
+            className={`lg:hidden p-2 text-gray-500 hover:text-gray-800 z-[999] ${
+              isSidebarOpen ? "text-white" : ""
+            }`}
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <svg

@@ -92,11 +92,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
   };
 
   const handleChangeEditor = (
-    setEditorValue: any,
     value: string,
     name: string
   ) => {
-    setEditorValue(value);
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -124,7 +122,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
               required={field.required}
               className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select {field.label}</option>
+              <option value="">Pilih {field.label}</option>
               {field.options?.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -147,7 +145,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
                 value={field.defaultValue || ""}
                 placeholder={field.placeholder}
                 onChange={(e: any) =>
-                  handleChangeEditor(field.setEditorValue, e, "content")
+                  handleChangeEditor(e, "content")
                 }
               />
             </>
