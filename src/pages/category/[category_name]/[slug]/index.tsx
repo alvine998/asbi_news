@@ -40,7 +40,7 @@ const DetailNews: NextPageWithLayout = () => {
     fetchNews();
   }, [params?.slug]);
   return (
-    <>
+    <div className="min-h-screen">
       {loading ? (
         <Loader />
       ) : (
@@ -86,7 +86,6 @@ const DetailNews: NextPageWithLayout = () => {
 
           <div>
             <h2 className="text-2xl font-semibold mb-4 underline">
-
               Berita Lainnya
             </h2>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -123,7 +122,7 @@ const DetailNews: NextPageWithLayout = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

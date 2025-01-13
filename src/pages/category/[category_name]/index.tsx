@@ -39,8 +39,6 @@ const ListCategory: NextPageWithLayout = () => {
     );
     const dataPublish: any = await getNews("publish", false, "");
     let data = filterAndCombine(dataCategoryName, dataPublish);
-    console.log(dataCategoryName, "cat");
-    console.log(dataPublish, "publ");
     const popularData: any = await getNews("publish", true);
     setNews(data);
     setPopulars(popularData);
