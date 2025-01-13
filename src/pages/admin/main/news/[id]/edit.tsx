@@ -53,8 +53,9 @@ const UpdateNews: NextPageWithLayout = () => {
         setLoading(false);
       }
     };
-
-    fetchNews();
+    if (params?.id) {
+      fetchNews();
+    }
   }, [params?.id]);
 
   const fetchCategories = async () => {
@@ -67,6 +68,8 @@ const UpdateNews: NextPageWithLayout = () => {
   const handleUpdate = async (values: Record<string, any>) => {
     const payload = {
       ...values,
+      publishedAt:
+        values.status === "publish" ? new Date().toISOString() : null,
     };
     await updateNews(news?.id as string, payload);
     router.push("/admin/main/news");
@@ -121,8 +124,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "texteditor",
       placeholder: "Masukkan Isi Berita",
       required: true,
-      editorValue: editorValue,
-      setEditorValue: setEditorValue,
+      defaultValue: news?.content,
     },
     {
       name: "editor",
@@ -131,6 +133,26 @@ const UpdateNews: NextPageWithLayout = () => {
       placeholder: "Masukkan Editor",
       required: true,
       defaultValue: news?.editor,
+    },
+    {
+      name: "headline",
+      label: "Headline",
+      type: "select",
+      options: [
+        { label: "Ya", value: 1 },
+        { label: "Tidak", value: 0 },
+      ],
+      defaultValue: news?.headline,
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Publish", value: "publish" },
+        { label: "Draft", value: "draft" },
+      ],
+      defaultValue: news?.status,
     },
     {
       name: "keywords",

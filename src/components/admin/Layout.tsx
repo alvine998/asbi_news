@@ -52,7 +52,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform lg:translate-x-0 lg:relative`}
       >
-        <div className="p-4 font-bold text-xl border-b border-gray-400">
+        <div className="p-4 font-bold text-xl border-b border-gray-400 lg:text-start text-right">
           Dashboard
         </div>
         <nav className="flex-1 p-4 space-y-2">
@@ -86,7 +86,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         {/* Topbar */}
         <header className="bg-white shadow px-4 py-2 flex justify-between items-center">
           <button
-            className="lg:hidden p-2 text-gray-500 hover:text-gray-800"
+            className={`lg:hidden p-2 text-gray-500 hover:text-gray-800 z-[999] ${isSidebarOpen ? "text-white" :""}`}
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <svg

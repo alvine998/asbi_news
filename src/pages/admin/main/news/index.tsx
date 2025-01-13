@@ -17,6 +17,7 @@ import { deleteNews, getNews } from "@/pages/api/news";
 import { INews } from "@/types/news";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import moment from "moment";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -58,7 +59,7 @@ const News: NextPageWithLayout = () => {
   const columns = [
     {
       name: "Judul",
-      selector: (row: any) => row.title,
+      selector: (row: any) => row.title?.substring(0, 30) + "...",
       sortable: true,
     },
     {
@@ -69,7 +70,7 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Deskripsi",
-      selector: (row: INews) => row.description,
+      selector: (row: INews) => row.description?.substring(0, 30) + "...",
       sortable: true,
     },
     {
@@ -84,7 +85,8 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Kata Kunci",
-      selector: (row: INews) => row.keywords?.join(", "),
+      selector: (row: INews) =>
+        row.keywords?.slice(0, 3)?.join(", "),
       sortable: true,
     },
     {
@@ -93,13 +95,18 @@ const News: NextPageWithLayout = () => {
       sortable: true,
     },
     {
-        name: "Headline",
-        selector: (row: INews) => row.headline == 1 ? "Ya" : "Tidak",
-        sortable: true,
-      },
+      name: "Headline",
+      selector: (row: INews) => (row.headline == 1 ? "Ya" : "Tidak"),
+      sortable: true,
+    },
     {
       name: "Status",
       selector: (row: INews) => row.status,
+      sortable: true,
+    },
+    {
+      name: "Tanggal Publish",
+      selector: (row: INews) => moment(row?.publishedAt)?.format("DD-MM-YYYY HH:mm"),
       sortable: true,
     },
     {

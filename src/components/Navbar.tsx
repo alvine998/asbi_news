@@ -24,16 +24,16 @@ export default function Navbar() {
   const params = useParams();
   return (
     <div>
-      <header className="bg-blue-600 text-white py-2 lg:px-28 px-2">
+      <header className="bg-white shadow py-2 lg:px-28 px-2">
         <div className="container mx-auto flex justify-between items-center">
           <Link href={"/"}>
-            <h1 className="text-xl font-bold">ASBI News</h1>
+            <img src="/images/asbi-logo.png" className="w-full h-10" alt="asbilogo" />
           </Link>
           <nav className="space-x-4 lg:block hidden">
             <Input placeholder="Cari berita disini..." />
           </nav>
           <button className="lg:hidden block" onClick={toggleSidebar}>
-            <AlignJustifyIcon size={24} color="white" />
+            <AlignJustifyIcon size={24} color="black" />
           </button>
         </div>
         {/* Sidebar */}

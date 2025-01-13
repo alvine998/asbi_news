@@ -120,7 +120,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
               id={field.name}
               name={field.name}
               onChange={handleChange}
-              value={field.defaultValue}
+              defaultValue={field.defaultValue}
               required={field.required}
               className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -144,10 +144,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
           ) : field.type === "texteditor" ? (
             <>
               <TextEditor
-                editorValue={field.editorValue}
-                setEditorValue={field.setEditorValue}
+                value={field.defaultValue || ""}
                 placeholder={field.placeholder}
-                handleChange={(e: any) =>
+                onChange={(e: any) =>
                   handleChangeEditor(field.setEditorValue, e, "content")
                 }
               />

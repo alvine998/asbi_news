@@ -44,9 +44,10 @@ const CreateNews: NextPageWithLayout = () => {
       )?.name,
       slug: createSlug(values.title),
       viewers: 0,
-      status: "draft",
-      headline: 0,
-      publishedAt: "",
+      status: values.status,
+      headline: values.headline ? 1 : 0,
+      publishedAt:
+        values.status === "publish" ? new Date().toISOString() : null,
     };
     await createNews(payload);
     router.push("/admin/main/news");
@@ -98,8 +99,6 @@ const CreateNews: NextPageWithLayout = () => {
       type: "texteditor",
       placeholder: "Masukkan Isi Berita",
       required: true,
-      editorValue: editorValue,
-      setEditorValue: setEditorValue,
     },
     {
       name: "editor",
@@ -107,6 +106,24 @@ const CreateNews: NextPageWithLayout = () => {
       type: "text",
       placeholder: "Masukkan Editor",
       required: true,
+    },
+    {
+      name: "headline",
+      label: "Headline",
+      type: "select",
+      options: [
+        { label: "Ya", value: 1 },
+        { label: "Tidak", value: 0 },
+      ],
+    },
+    {
+      name: "status",
+      label: "Status",
+      type: "select",
+      options: [
+        { label: "Publish", value: "publish" },
+        { label: "Draft", value: "draft" },
+      ],
     },
     {
       name: "keywords",
@@ -117,7 +134,7 @@ const CreateNews: NextPageWithLayout = () => {
 
   return (
     <div className="bg-white p-4 rounded">
-        <h1 className="text-2xl font-bold">Buat Berita</h1>
+      <h1 className="text-2xl font-bold">Buat Berita</h1>
       {loading ? (
         <Loader />
       ) : (

@@ -1,3 +1,5 @@
+import Layout from "@/components/Layout";
+import { NextPageWithLayout } from "@/pages/_app";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
@@ -8,7 +10,7 @@ import React, { useState } from "react";
  *
  * @returns The component for the index page.
  */
-export default function index() {
+const ListCategory: NextPageWithLayout = () => {
   const params = useParams();
   const router = useRouter();
   const [page, setPage] = useState<any>(router.query?.page || "1");
@@ -224,4 +226,8 @@ export default function index() {
       </div>
     </div>
   );
-}
+};
+
+ListCategory.getLayout = (page) => <Layout>{page}</Layout>;
+
+export default ListCategory;
