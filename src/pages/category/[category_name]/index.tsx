@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
  * @returns The component for the index page.
  */
 const ListCategory: NextPageWithLayout = () => {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const [page, setPage] = useState<any>(router.query?.page || "1");
   const [news, setNews] = useState<any[]>([]);
@@ -33,15 +33,15 @@ const ListCategory: NextPageWithLayout = () => {
   const fetchNews = async () => {
     setLoading(true);
     const dataCategoryName: any = await getNews(
-      "",
-      false,
+      "category_name",
       params?.category_name as string
     );
-    const dataPublish: any = await getNews("publish", false, "");
+    const dataPublish: any = await getNews("publish");
     let data = filterAndCombine(dataCategoryName, dataPublish);
-    const popularData: any = await getNews("publish", true);
+    const popularData: any = await getNews("popular");
+    const finalData = filterAndCombine(dataPublish, popularData);
     setNews(data);
-    setPopulars(popularData);
+    setPopulars(finalData);
     setFiltered(data); // Set initial filtered categories
     setLoading(false);
   };

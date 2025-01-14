@@ -10,6 +10,7 @@ import moment from "moment";
 import Head from "next/head";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import Script from "next/script";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -73,6 +74,19 @@ const DetailNews: NextPageWithLayout = () => {
             <meta name="twitter:description" content={news?.description} />
             <meta name="twitter:image" content={news?.thumbnail} />
             <meta name="twitter:creator" content={"Alvine"} />
+            <Script
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
+              crossOrigin="anonymous"
+            ></Script>
+            <ins
+              className="block adsbygoogle"
+              data-ad-client="ca-pub-1465977632288270"
+              data-ad-slot="2260079280"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            ></ins>
+            <Script>(adsbygoogle = window.adsbygoogle || []).push({});</Script>
           </Head>
           {params?.slug && params?.category_name && (
             <div className="flex items-center justify-center mb-4">

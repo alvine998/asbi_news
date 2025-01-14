@@ -42,25 +42,28 @@ export const createNews = async (payload: any) => {
 };
 
 // Read news
-export const getNews = async (status?: string, popular?: boolean, category_name?: string) => {
+export const getNews = async (filter?: any, category_name?: any) => {
     const newsRef = ref(database, "news");
     let newsQuery: any = newsRef; // Default to fetching all news
 
     try {
         // Filter by status
-        if (status === "publish" || status === "draft") {
-            newsQuery = query(newsRef, orderByChild("status"), equalTo(status));
+        if (filter === "publish" || filter === "draft") {
+            newsQuery = query(newsRef, orderByChild("status"), equalTo(filter));
         }
 
         // Filter by popularity (top 6 most viewed)
-        if (popular) {
+        if (filter == "popular") {
             newsQuery = query(newsRef, orderByChild("viewers"), limitToFirst(6));
         }
 
-        // Filter by category and status
         // Handle category-based query
-        if (category_name) {
+        if (filter === "category_name") {
             newsQuery = query(newsRef, orderByChild("category_name"), equalTo(category_name));
+        }
+
+        if (filter === "headline") {
+            newsQuery = query(newsRef, orderByChild("headline"), equalTo("1"));
         }
         const snapshot = await get(newsQuery);
 
@@ -139,45 +142,6 @@ export const getSingleNews = async (slug: string) => {
                     ...data[key],
                 }))[0]; // Assuming you only want a single item
             }
-        } else {
-            toast.error("News not found.", {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            return null;
-        }
-    } catch (error) {
-        console.error("Error fetching single news:", error);
-        toast.error("Failed to fetch news. Please try again.", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
-        return null;
-    }
-};
-
-export const getHeadlines = async () => {
-    const newsRef = ref(database, `news`);
-
-    try {
-        const newsQuery = query(newsRef, orderByChild("headline"), equalTo("1"));
-        const snapshot = await get(newsQuery);
-
-        if (snapshot.exists()) {
-            const news = snapshot.val();
-            return Object.keys(news).map((key) => ({
-                id: key,
-                ...news[key],
-            }));;
-
         } else {
             toast.error("News not found.", {
                 position: "top-right",

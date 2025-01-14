@@ -10,11 +10,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NextPageWithLayout } from "./_app";
 import { getDatabase } from "firebase/database";
-import { getHeadlines, getNews } from "./api/news";
+import { getNews } from "./api/news";
 import { INews } from "@/types/news";
 import Loader from "@/components/Loader";
 import moment from "moment";
-import { shuffleArray } from "@/utils";
+import { filterAndCombine, shuffleArray } from "@/utils";
 
 const Home: NextPageWithLayout = () => {
   const [news, setNews] = useState<any[]>([]);
@@ -29,17 +29,20 @@ const Home: NextPageWithLayout = () => {
     setLoading(true);
     try {
       const data: any = await getNews("publish");
-      const popularData: any = await getNews("publish", true);
+      const publishData: any = await getNews("publish");
+      const popularData: any = await getNews("popular");
+      const finalData = filterAndCombine(publishData, popularData);
 
-      let headlines: any = await getHeadlines();
-      const finalheadlines = headlines?.map((item: INews) => ({
+      let headlines: any = await getNews("headline");
+      const publishHeadlines: any = filterAndCombine(publishData, headlines);
+      const finalheadlines = publishHeadlines?.map((item: INews) => ({
         id: item?.id,
         title: item?.title,
         thumbnail: item?.thumbnail,
-        link: `/category/${item?.category}/${item?.slug}`,
+        link: `/category/${item?.category_name}/${item?.slug}`,
       }));
       setNews(data);
-      setPopulars(popularData);
+      setPopulars(finalData);
       setHeadlines(finalheadlines);
       setLoading(false);
     } catch (error) {

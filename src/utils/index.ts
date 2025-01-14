@@ -63,8 +63,6 @@ export const filterAndCombine = (categoryData: any, statusData: any) => {
     ))
   );
 
-  console.log(combined,'comb');
-
   // Optionally, you can apply more filtering logic here
   // Example: Only return items where the status is 'publish' and category matches
   return combined.filter(item => item.status === 'publish');
