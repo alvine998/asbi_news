@@ -42,7 +42,9 @@ const DetailNews: NextPageWithLayout = () => {
       }
     };
 
-    fetchNews();
+    if (params?.slug) {
+      fetchNews();
+    }
   }, [params?.slug]);
 
   return (

@@ -36,9 +36,9 @@ const ListCategory: NextPageWithLayout = () => {
       "category_name",
       params?.category_name as string
     );
-    const dataPublish: any = await getNews("publish");
+    const dataPublish: any = await getNews("publish", "");
     let data = filterAndCombine(dataCategoryName, dataPublish);
-    const popularData: any = await getNews("popular");
+    const popularData: any = await getNews("popular", "");
     const finalData = filterAndCombine(dataPublish, popularData);
     setNews(data);
     setPopulars(finalData);
@@ -47,7 +47,9 @@ const ListCategory: NextPageWithLayout = () => {
   };
 
   useEffect(() => {
-    fetchNews();
+    if (params?.category_name) {
+      fetchNews();
+    }
   }, [db, params?.category_name]);
 
   useEffect(() => {

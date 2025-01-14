@@ -42,10 +42,9 @@ export const createNews = async (payload: any) => {
 };
 
 // Read news
-export const getNews = async (filter?: any, category_name?: any) => {
+export const getNews = async (filter?: any, category_name?: any | "") => {
     const newsRef = ref(database, "news");
     let newsQuery: any = newsRef; // Default to fetching all news
-
     try {
         // Filter by status
         if (filter === "publish" || filter === "draft") {
