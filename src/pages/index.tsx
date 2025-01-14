@@ -52,6 +52,37 @@ const Home: NextPageWithLayout = () => {
   }, [db]);
   return (
     <div className="min-h-screen bg-gray-100">
+      <Head>
+        <title>Asbi News</title>
+        <meta
+          name="description"
+          content="Asbi News adalah platform berita terkini dan terpercaya di Indonesia. Dapatkan informasi terkini tentang politik, ekonomi, dan teknologi melalui berita terbaik kami."
+        />
+        <meta
+          name="keywords"
+          content="asbinews, asbi, berita, politik, ekonomi, teknologi"
+        />
+        <meta name="author" content="Alvine" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="canonical" href="https://asbinews.com/" />
+
+        <meta property="og:title" content="Asbi News" />
+        <meta
+          property="og:description"
+          content="Asbi News adalah platform berita terkini dan terpercaya di Indonesia. Dapatkan informasi terkini tentang politik, ekonomi, dan teknologi melalui berita terbaik kami."
+        />
+        <meta property="og:url" content="https://asbinews.com/" />
+        <meta property="og:image" content="/images/asbi-logo.png" />
+        <meta property="og:type" content="website" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Asbi News" />
+        <meta
+          name="twitter:description"
+          content="Asbi News adalah platform berita terkini dan terpercaya di Indonesia. Dapatkan informasi terkini tentang politik, ekonomi, dan teknologi melalui berita terbaik kami."
+        />
+        <meta name="twitter:image" content="/images/asbi-logo.png" />
+      </Head>
       {/* Main Content */}
       {loading ? (
         <Loader />

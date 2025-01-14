@@ -3,6 +3,7 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Head from "next/head";
 import Script from "next/script";
+import { ToastContainer } from "react-toastify";
 
 export default function Layout({ children }: any) {
   return (
@@ -27,6 +28,7 @@ export default function Layout({ children }: any) {
       <Navbar />
       <main className="px-4 lg:px-28">{children}</main>
       <Footer />
+      <ToastContainer />
     </div>
   );
 }

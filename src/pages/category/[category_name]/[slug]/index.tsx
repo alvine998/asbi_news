@@ -7,8 +7,9 @@ import { shuffleArray } from "@/utils";
 import { getDatabase } from "firebase/database";
 import { EyeIcon } from "lucide-react";
 import moment from "moment";
+import Head from "next/head";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const DetailNews: NextPageWithLayout = () => {
@@ -16,6 +17,7 @@ const DetailNews: NextPageWithLayout = () => {
   const [othernews, setOtherNews] = useState<INews[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const params = useParams();
+  const pathname = usePathname();
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
@@ -45,6 +47,30 @@ const DetailNews: NextPageWithLayout = () => {
         <Loader />
       ) : (
         <div className="w-full bg-white px-4 shadow rounded h-auto py-4 my-4">
+          <Head>
+            {/* Basic SEO Meta Tags */}
+            <title>{news?.title}</title>
+            <meta name="description" content={news?.description} />
+            <meta name="author" content={"admin leasfund"} />
+            <meta name="keywords" content={news?.keywords?.toString()} />
+            <link rel="canonical" href={pathname} />
+
+            {/* Open Graph Meta Tags */}
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content={news?.title} />
+            <meta property="og:description" content={news?.description} />
+            <meta property="og:image" content={news?.thumbnail} />
+            <meta property="og:url" content={pathname} />
+            <meta property="article:author" content={"admin leasfund"} />
+            <meta property="article:published_time" content={news?.createdAt} />
+
+            {/* Twitter Card Meta Tags */}
+            <meta name="twitter:card" content={news?.thumbnail} />
+            <meta name="twitter:title" content={news?.title} />
+            <meta name="twitter:description" content={news?.description} />
+            <meta name="twitter:image" content={news?.thumbnail} />
+            <meta name="twitter:creator" content={"admin leasfund"} />
+          </Head>
           <h1 className="lg:text-4xl text-2xl font-bold text-center text-black">
             {news?.title}
           </h1>
