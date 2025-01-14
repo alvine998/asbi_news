@@ -20,7 +20,6 @@ const TextEditor = ({
   useEffect(() => {
     if (typeof window !== "undefined") {
       setShow(true);
-      setEditorValue("Ketik disini")
     }
   }, []);
 

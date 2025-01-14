@@ -69,7 +69,6 @@ const UpdateNews: NextPageWithLayout = () => {
   const handleUpdate = async (values: Record<string, any>) => {
     const payload = {
       ...values,
-      publishedAt: values.status === "publish" ? values?.publishedAt : null,
     };
     await updateNews(news?.id as string, payload);
     router.push("/admin/main/news");
@@ -180,7 +179,12 @@ const UpdateNews: NextPageWithLayout = () => {
     <div className="bg-white p-4 rounded">
       <div className="flex items-center justify-between lg:flex-row flex-col gap-2 mb-4">
         <h1 className="text-2xl font-bold">Ubah Berita</h1>
-        <Button onClick={() => router.back()} type="button" variant="link" className="my-2">
+        <Button
+          onClick={() => router.back()}
+          type="button"
+          variant="link"
+          className="my-2"
+        >
           Kembali
         </Button>
       </div>

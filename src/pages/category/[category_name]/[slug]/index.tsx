@@ -55,7 +55,7 @@ const DetailNews: NextPageWithLayout = () => {
             {/* Basic SEO Meta Tags */}
             <title>{news?.title}</title>
             <meta name="description" content={news?.description} />
-            <meta name="author" content={"ALvine"} />
+            <meta name="author" content={"Alvine"} />
             <meta name="keywords" content={news?.keywords?.toString()} />
             <link rel="canonical" href={currentUrl} />
 
