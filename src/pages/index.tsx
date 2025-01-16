@@ -28,10 +28,11 @@ const Home: NextPageWithLayout = () => {
   const fetchNews = async () => {
     setLoading(true);
     try {
-      const data: any = await getNews("publish");
+      const data: any = await getNews("uptodate");
       const publishData: any = await getNews("publish");
       const popularData: any = await getNews("popular");
       const finalData = filterAndCombine(publishData, popularData);
+      const newsUpdate = filterAndCombine(data, publishData);
 
       let headlines: any = await getNews("headline");
       const publishHeadlines: any = filterAndCombine(publishData, headlines);
@@ -41,7 +42,7 @@ const Home: NextPageWithLayout = () => {
         thumbnail: item?.thumbnail,
         link: `/category/${item?.category_name}/${item?.slug}`,
       }));
-      setNews(data);
+      setNews(newsUpdate);
       setPopulars(finalData);
       setHeadlines(finalheadlines);
       setLoading(false);

@@ -40,6 +40,7 @@ const ListCategory: NextPageWithLayout = () => {
     let data = filterAndCombine(dataCategoryName, dataPublish);
     const popularData: any = await getNews("popular", "");
     const finalData = filterAndCombine(dataPublish, popularData);
+    console.log(dataCategoryName,'lsls');
     setNews(data);
     setPopulars(finalData);
     setFiltered(data); // Set initial filtered categories

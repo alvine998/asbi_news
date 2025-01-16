@@ -1,5 +1,5 @@
 import { database } from "@/config/firebase";
-import { ref, push, set, get, update, remove, query, orderByChild, equalTo, increment, startAt, limitToFirst } from "firebase/database";
+import { ref, push, set, get, update, remove, query, orderByChild, equalTo, increment, startAt, limitToFirst, limitToLast } from "firebase/database";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
 
@@ -63,6 +63,10 @@ export const getNews = async (filter?: any, category_name?: any | "") => {
 
         if (filter === "headline") {
             newsQuery = query(newsRef, orderByChild("headline"), equalTo("1"));
+        }
+
+        if (filter === "uptodate") {
+            newsQuery = query(newsRef, orderByChild("createdAt"), limitToLast(3));
         }
         const snapshot = await get(newsQuery);
 
