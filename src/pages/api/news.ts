@@ -66,7 +66,7 @@ export const getNews = async (filter?: any, category_name?: any | "") => {
         }
 
         if (filter === "uptodate") {
-            newsQuery = query(newsRef, orderByChild("createdAt"), limitToLast(3));
+            newsQuery = query(newsRef, orderByChild("createdAt"), limitToLast(6));
         }
         const snapshot = await get(newsQuery);
 

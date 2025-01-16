@@ -35,13 +35,14 @@ const Home: NextPageWithLayout = () => {
       const newsUpdate = filterAndCombine(data, publishData);
 
       let headlines: any = await getNews("headline");
-      const publishHeadlines: any = filterAndCombine(publishData, headlines);
+      const publishHeadlines: any = filterAndCombine(headlines, publishData);
       const finalheadlines = publishHeadlines?.map((item: INews) => ({
         id: item?.id,
         title: item?.title,
         thumbnail: item?.thumbnail,
         link: `/category/${item?.category_name}/${item?.slug}`,
       }));
+      console.log(finalheadlines, "lkll");
       setNews(newsUpdate);
       setPopulars(finalData);
       setHeadlines(finalheadlines);
@@ -102,7 +103,7 @@ const Home: NextPageWithLayout = () => {
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {/* News Card */}
-                  {news?.slice(0, 3).map((newsItem) => (
+                  {news?.slice(0, 6).map((newsItem) => (
                     <div
                       key={newsItem}
                       className="bg-white shadow-md rounded-lg overflow-hidden"
@@ -138,7 +139,7 @@ const Home: NextPageWithLayout = () => {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {/* News Card */}
                   {shuffleArray(news)
-                    ?.slice(0, 3)
+                    ?.slice(0, 6)
                     .map((newsItem) => (
                       <div
                         key={newsItem}
@@ -184,15 +185,15 @@ const Home: NextPageWithLayout = () => {
                       <Link
                         key={newsItem?.id}
                         href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                        className="bg-white shadow-md rounded-lg p-4"
+                        className="bg-white shadow-md rounded-lg px-4 py-2"
                       >
-                        <h5 className="text-lg font-semibold text-black">
+                        <h5 className="text-sm lg:text-lg font-semibold text-black">
                           {newsItem?.title}
                         </h5>
-                        <p className="text-gray-800">
+                        <p className="text-gray-800 lg:text-md text-xs">
                           {newsItem?.description?.slice(0, 100)}
                         </p>
-                        <p className="text-gray-500 mb-4 mt-2">
+                        <p className="text-gray-800 font-bold lg:text-md text-xs">
                           {moment(newsItem?.publishedAt)?.format(
                             "DD MMMM YYYY HH:mm"
                           )}
