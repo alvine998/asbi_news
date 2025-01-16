@@ -42,7 +42,6 @@ const Home: NextPageWithLayout = () => {
         thumbnail: item?.thumbnail,
         link: `/category/${item?.category_name}/${item?.slug}`,
       }));
-      console.log(finalheadlines, "lkll");
       setNews(newsUpdate);
       setPopulars(finalData);
       setHeadlines(finalheadlines);
