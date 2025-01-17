@@ -4,6 +4,7 @@ import { NextPageWithLayout } from "@/pages/_app";
 import { getNews, getSingleNews, updateViewers } from "@/pages/api/news";
 import { INews } from "@/types/news";
 import { shuffleArray } from "@/utils";
+import DOMPurify from "dompurify";
 import { getDatabase } from "firebase/database";
 import { EyeIcon, FacebookIcon, Share2Icon } from "lucide-react";
 import moment from "moment";
@@ -13,6 +14,7 @@ import { useParams, usePathname } from "next/navigation";
 import Script from "next/script";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import "react-quill-new/dist/quill.snow.css";
 
 const DetailNews: NextPageWithLayout = () => {
   const [news, setNews] = useState<INews>();
@@ -20,6 +22,7 @@ const DetailNews: NextPageWithLayout = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const params = useParams();
   const pathname = usePathname();
+
   const currentUrl = `https://www.asbinews.com${pathname}`;
   useEffect(() => {
     const fetchNews = async () => {
@@ -35,6 +38,7 @@ const DetailNews: NextPageWithLayout = () => {
         setNews(fetchedNews);
         setOtherNews(otherNews);
         await updateViewers(fetchedNews?.id as string);
+        
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -185,10 +189,10 @@ const DetailNews: NextPageWithLayout = () => {
               <p className="text-gray-600">{news?.viewers}x dilihat</p>
             </div>
           </div>
-          <p
-            className="text-md mt-4 text-justify text-black"
-            dangerouslySetInnerHTML={{ __html: news?.content }}
-          ></p>
+          <div
+            className="text-md mt-4 text-justify text-black ql-editor"
+            dangerouslySetInnerHTML={{ __html: news?.content}}
+          ></div>
 
           <hr className="mt-8 border-b-2" />
           <h5 className="text-gray-800 mt-6 text-lg">

@@ -113,7 +113,7 @@ const Home: NextPageWithLayout = () => {
                         className="w-full h-48 object-cover"
                       />
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold mb-2">
+                        <h3 className="lg:text-md font-semibold mb-2">
                           {newsItem?.title}
                         </h3>
                         <p className="text-gray-600 mb-4">
@@ -186,7 +186,7 @@ const Home: NextPageWithLayout = () => {
                         href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
                         className="bg-white shadow-md rounded-lg px-4 py-2"
                       >
-                        <h5 className="text-sm lg:text-lg font-semibold text-black">
+                        <h5 className="text-sm lg:text-md font-semibold text-black">
                           {newsItem?.title}
                         </h5>
                         <p className="text-gray-800 lg:text-md text-xs">

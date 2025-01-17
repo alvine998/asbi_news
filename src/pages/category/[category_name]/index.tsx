@@ -40,7 +40,7 @@ const ListCategory: NextPageWithLayout = () => {
     let data = filterAndCombine(dataCategoryName, dataPublish);
     const popularData: any = await getNews("popular", "");
     const finalData = filterAndCombine(dataPublish, popularData);
-    console.log(dataCategoryName,'lsls');
+    console.log(dataCategoryName, "lsls");
     setNews(data);
     setPopulars(finalData);
     setFiltered(data); // Set initial filtered categories
@@ -231,15 +231,15 @@ const ListCategory: NextPageWithLayout = () => {
                     <Link
                       key={newsItem?.id}
                       href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                      className="bg-white shadow-md rounded-lg p-4"
+                      className="bg-white shadow-md rounded-lg px-4 py-2"
                     >
-                      <h5 className="text-lg font-semibold text-black">
+                      <h5 className="text-sm lg:text-lg font-semibold text-black">
                         {newsItem?.title}
                       </h5>
-                      <p className="text-gray-800">
+                      <p className="text-gray-800 lg:text-md text-xs">
                         {newsItem?.description?.slice(0, 100)}
                       </p>
-                      <p className="text-gray-500 mb-4 mt-2">
+                      <p className="text-gray-800 font-bold lg:text-md text-xs">
                         {moment(newsItem?.publishedAt)?.format(
                           "DD MMMM YYYY HH:mm"
                         )}

@@ -13,7 +13,11 @@ import { getCategories } from "@/pages/api/category";
 import { getAds } from "@/pages/api/ads";
 import Loader from "./Loader";
 import { shuffleArray } from "@/utils";
-import { toast } from "react-toastify";
+import moment from "moment";
+import 'moment/locale/id'; // Import Indonesian locale
+
+// Set the locale to Indonesian
+moment.locale('id');
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -76,7 +80,8 @@ export default function Navbar() {
               alt="asbilogo"
             />
           </Link>
-          <nav className="space-x-4 lg:block hidden">
+          <nav className="space-x-2 lg:flex hidden gap-2 items-center">
+            <p>{moment().format("dddd, DD MMMM YYYY")}</p>
             <Input placeholder="Cari berita disini..." />
           </nav>
           <button className="lg:hidden block" onClick={toggleSidebar}>
@@ -167,7 +172,7 @@ export default function Navbar() {
             {/* Replace with an actual ad script or image */}
           </div>
         </div>
-        <div className=" mb-8 lg:flex hidden lg:gap-2 gap-2 w-full justify-center items-center border-b-2 border-t-2 border-b-gray-700 border-t-gray-700 overflow-x-auto">
+        <div className=" mb-2 lg:flex hidden lg:gap-2 gap-2 w-full justify-center items-center border-b-2 border-t-2 border-b-gray-700 border-t-gray-700 overflow-x-auto">
           <Link
             href={`/`}
             onClick={() => {

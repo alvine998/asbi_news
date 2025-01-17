@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import Head from "next/head";
@@ -6,8 +6,22 @@ import Script from "next/script";
 import { ToastContainer } from "react-toastify";
 import { FacebookIcon, InstagramIcon } from "lucide-react";
 import Link from "next/link";
+import { getNews } from "@/pages/api/news";
 
 export default function Layout({ children }: any) {
+  const [news, setNews] = useState<any>([]);
+  const fetchNews = async () => {
+    try {
+      const news = await getNews("publish", "");
+      setNews(news);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
   return (
     <div>
       <Head>
@@ -28,6 +42,23 @@ export default function Layout({ children }: any) {
         ></Script>
       </Head>
       <Navbar />
+      <div className="lg:px-28">
+        <div className="bg-blue-300 text-gray-800 py-3">
+          <div className="overflow-hidden relative">
+            <div className="whitespace-nowrap animate-marquee">
+              <span className="mx-4 text-black font-bold">
+                🚨 Breaking News:
+              </span>
+              {news?.slice(0, 5).map((item: any) => (
+                <span key={item.id} className="mx-4 text-black">
+                  {item.title}
+                </span>
+              ))}
+              <span className="mx-4 text-black">🚨 Breaking News:</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <main className="px-4 lg:px-28">{children}</main>
       <div className="flex items-center justify-center mb-4">
         <Link

@@ -1,15 +1,14 @@
 import { Html, Main, NextScript, Head } from "next/document";
-import Script from "next/script";
 
 export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
           crossOrigin="anonymous"
-        ></Script>
+        ></script>
         <ins
           className="block adsbygoogle"
           data-ad-client="ca-pub-1465977632288270"
@@ -17,7 +16,7 @@ export default function Document() {
           data-ad-format="auto"
           data-full-width-responsive="true"
         ></ins>
-        <Script>(adsbygoogle = window.adsbygoogle || []).push({});</Script>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
       </Head>
       <body>
         <Main />
