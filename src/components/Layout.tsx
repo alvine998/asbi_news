@@ -42,23 +42,28 @@ export default function Layout({ children }: any) {
         ></Script>
       </Head>
       <Navbar />
-      <div className="lg:px-28">
-        <div className="bg-blue-300 text-gray-800 py-3">
-          <div className="overflow-hidden relative">
-            <div className="whitespace-nowrap animate-marquee">
-              <span className="mx-4 text-black font-bold">
-                🚨 Breaking News:
-              </span>
-              {news?.slice(0, 5).map((item: any) => (
-                <span key={item.id} className="mx-4 text-black">
-                  {item.title}
+      {news?.length > 0 ? (
+        <div className="lg:px-28">
+          <div className="bg-blue-300 text-gray-800 py-3">
+            <div className="overflow-hidden relative">
+              <div className="whitespace-nowrap lg:animate-marquee-desktop animate-marquee">
+                <span className="mx-4 text-black font-bold">
+                  🚨 Breaking News:
                 </span>
-              ))}
-              <span className="mx-4 text-black">🚨 Breaking News:</span>
+                {news?.slice(0, 5).map((item: any) => (
+                  <span key={item.id} className="mx-4 text-black">
+                    {item.title}
+                  </span>
+                ))}
+                <span className="mx-4 text-black">🚨 Breaking News:</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
+
       <main className="px-4 lg:px-28">{children}</main>
       <div className="flex items-center justify-center mb-4">
         <Link

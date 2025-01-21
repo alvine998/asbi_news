@@ -11,11 +11,15 @@
       transform: translateX(100%);
     }
     100% {
-      transform: translateX(-200%);
+      transform: translateX(-300%);
     }
   }
 
   .animate-marquee {
     animation: marquee 15s linear infinite;
+  }
+
+  .animate-marquee-desktop {
+    animation: marquee 30s linear infinite;
   }
 }

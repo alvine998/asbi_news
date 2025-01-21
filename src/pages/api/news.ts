@@ -209,6 +209,53 @@ export const getNewsByCategory = async (category: string) => {
     }
 };
 
+export const getNewsPerCategory = async () => {
+    const newsRef = ref(database, "news");
+
+    try {
+        // Fetch all categories
+        const categoriesQuery = query(newsRef, orderByChild("category_name"));
+        const snapshot = await get(categoriesQuery);
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+
+            // Group news by category
+            const groupedByCategory: { [key: string]: any[] } = {};
+            Object.keys(data).forEach((key) => {
+                const item = data[key];
+                const category = item.category_name || "Uncategorized";
+                if (!groupedByCategory[category]) {
+                    groupedByCategory[category] = [];
+                }
+                groupedByCategory[category].push({ id: key, ...item });
+            });
+
+            // Fetch 2 news items from each category
+            const limitedNews = Object.keys(groupedByCategory).reduce((result: any, category: any) => {
+                result[category] = groupedByCategory[category]
+                    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)) // Sort by createdAt (latest first)
+                    .slice(0, 2); // Limit to 2 items per category
+                return result;
+            }, {});
+
+            return limitedNews;
+        } else {
+            return {};
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error("Failed to fetch news. Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+    }
+};
+
 // Update a news
 export const updateNews = async (id: string, updatedFields: any) => {
     if (!id) {

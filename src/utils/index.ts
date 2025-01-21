@@ -67,3 +67,23 @@ export const filterAndCombine = (categoryData: any, statusData: any) => {
   // Example: Only return items where the status is 'publish' and category matches
   return combined.filter(item => item.status === 'publish');
 };
+
+/**
+ * Format a given number as currency with a given locale and currency
+ * @param {number} value Number to be formatted
+ * @param {string} [locale] Locale to be used for formatting
+ * @param {string} [currency] Currency to be used for formatting
+ * @returns {string} Formatted number as currency
+ * @example
+ * const value = 1000;
+ * const locale = 'id-ID';
+ * const currency = 'IDR';
+ * const formatted = formatCurrency(value, locale, currency);
+ * console.log(formatted); // 'Rp1.000,00'
+ */
+export const formatCurrency = (value: number, locale: string, currency: string) => {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
