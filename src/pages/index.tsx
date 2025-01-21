@@ -284,23 +284,27 @@ const Home: NextPageWithLayout = () => {
               )}
 
               <div className="mt-4 w-full h-auto py-2 px-4 bg-blue-200 shadow rounded">
-                <h1 className="font-bold text-black text-center text-xl">
+                <h1 className="font-bold text-black text-center text-xl underline">
                   Kurs Dollar
                 </h1>
-                <div className="flex flex-col gap-2 mt-4">
+                <div className="flex flex-col mt-4 border border-black">
                   {currencySettings.map(({ code, locale, currency }) => (
                     <div
                       key={code}
-                      className="flex justify-between items-center"
+                      className="flex justify-between items-center border border-black"
                     >
-                      <p className="font-bold text-black">{code}</p>
-                      <p className="text-black">
+                      <p className="font-bold text-black border border-black p-1 w-full">
+                        {code}
+                      </p>
+                      <p className="text-black border border-black p-1 w-full">
                         {formatCurrency(kurs[code], locale, currency)}
                       </p>
                     </div>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-gray-600">* Kurs diperbarui setiap 1 hari sekali pada 00:00</p>
+                <p className="mt-2 text-xs text-gray-600">
+                  * Kurs diperbarui setiap 1 hari sekali pada 00:00 WIB
+                </p>
               </div>
             </section>
           </div>
