@@ -36,6 +36,7 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
   const handleRowsPerPageChange = (rowsPerPage: number) => {
     setItemsPerPage(rowsPerPage);
     setCurrentPage(1); // Reset to the first page on rows change
+    
   };
 
   return (
