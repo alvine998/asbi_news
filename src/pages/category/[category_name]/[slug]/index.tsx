@@ -23,10 +23,17 @@ import { useRouter } from "next/router";
 const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const pathname = usePathname();
-  const router = useRouter();
   let news = detail_news;
 
-  const currentUrl = `${window.location.origin}${pathname}`;
+  const [currentUrl, setCurrentUrl] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // You are on the client-side now
+      setCurrentUrl(`${window.location.origin}${router.asPath}`);
+    }
+  }, [router]);
 
   const updateViews = async () => {
     try {
