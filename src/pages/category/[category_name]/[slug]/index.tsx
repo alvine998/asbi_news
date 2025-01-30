@@ -18,19 +18,20 @@ import "react-quill-new/dist/quill.snow.css";
 import { GetServerSideProps } from "next";
 import axiosInstance from "@/utils/api";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const params = useParams();
   const pathname = usePathname();
+  const router = useRouter();
   let news = detail_news;
 
-  const currentUrl = `https://www.asbinews.com${pathname}`;
+  const currentUrl = `${window.location.origin}${pathname}`;
 
   const updateViews = async () => {
     try {
       const payload = {
-        ...news,
+        id: news?.id,
         viewers: (news?.viewers || 0) + 1,
       };
       const response = await axios.post("/api/express/news/update", payload); // Fetch from your API route
@@ -48,7 +49,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
 
   let keywords = process.env.NEXT_PUBLIC_API_BASE_URL?.includes("localhost")
     ? news?.keywords
-    : JSON.parse(news.keywords)
+    : JSON.parse(news.keywords);
 
   return (
     <div className="min-h-screen">
@@ -75,6 +76,9 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
               property="article:published_time"
               content={news?.published_at}
             />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:image:type" content="image/jpeg" />
 
             {/* Twitter Card Meta Tags */}
             <meta name="twitter:card" content="summary_large_image" />
