@@ -23,7 +23,7 @@ export default function Layout({
 }: Props) {
   return (
     <div>
-      <Head>
+      {/* <Head>
         <title>ASBI News</title>
         <meta name="description" content="Stay updated with the latest news" />
         <meta
@@ -39,7 +39,7 @@ export default function Layout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
           crossOrigin="anonymous"
         ></Script>
-      </Head>
+      </Head> */}
       <Navbar categories={categories} ads={ads} />
       {breakingNews?.length > 0 ? (
         <div className="lg:px-20">
