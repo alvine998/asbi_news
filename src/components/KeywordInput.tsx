@@ -40,7 +40,7 @@ const KeywordInput: React.FC<KeywordInputProps> = ({ value, onChange }) => {
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {value.map((keyword, index) => (
+        {value?.map((keyword, index) => (
           <div
             key={index}
             className="bg-gray-200 text-gray-700 px-3 py-1 rounded flex items-center"

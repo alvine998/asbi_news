@@ -102,7 +102,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({...formData, image: file});
+    onSubmit({ ...formData, image: file });
   };
 
   // const [file, setFile] = useState<File | null>(null);
@@ -110,18 +110,29 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if(file.size > 3 * 1024 * 1024) {
+       toast.error("Silakan Upload file dengan ukuran maksimal 3MB", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return
+    }
 
     const reader = new FileReader();
     reader.onloadend = async () => {
       const formData = new FormData();
       formData.append("image", file);
-      const response: any = await axiosInstance.post("/upload", formData, {
+      const response: any = await axiosInstance.post("/upload/v2", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      setFile(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"}${response?.data?.filePath}`)
+      setFile(response?.data?.filePath);
     };
 
     reader.readAsDataURL(file);

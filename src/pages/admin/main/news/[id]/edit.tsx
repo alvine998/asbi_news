@@ -191,13 +191,13 @@ const UpdateNews: NextPageWithLayout = ({ detail, categories }: any) => {
       name: "published_at",
       label: "Tanggal Publikasi",
       type: "datetime-local",
-      defaultValue: moment(detail?.publishedAt)?.format("YYYY-MM-DDTHH:mm"),
+      defaultValue: moment(detail?.published_at)?.format("YYYY-MM-DDTHH:mm"),
     },
     {
       name: "keywords",
       label: "Kata Kunci",
       type: "keywords",
-      defaultValue: detail?.keywords,
+      defaultValue: JSON.parse(detail?.keywords),
     },
   ];
 

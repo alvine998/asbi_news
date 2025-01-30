@@ -165,11 +165,6 @@ const News: NextPageWithLayout = ({ table, filters, categories }: any) => {
       sortable: true,
     },
     {
-      name: "Kata Kunci",
-      selector: (row: INews) => row.keywords?.slice(0, 3)?.join(", "),
-      sortable: true,
-    },
-    {
       name: "Dilihat",
       selector: (row: INews) => row.viewers + "x",
       sortable: true,

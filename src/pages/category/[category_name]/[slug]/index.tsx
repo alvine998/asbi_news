@@ -24,7 +24,6 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
   const params = useParams();
   const pathname = usePathname();
   let news = detail_news;
-  console.log(news, "nnn");
 
   const currentUrl = `https://www.asbinews.com${pathname}`;
 
@@ -49,7 +48,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
 
   let keywords = process.env.NEXT_PUBLIC_API_BASE_URL?.includes("localhost")
     ? news?.keywords
-    : JSON.parse(news?.keywords);
+    : JSON.parse(news.keywords)
 
   return (
     <div className="min-h-screen">
@@ -71,18 +70,18 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             <meta property="og:description" content={news?.description} />
             <meta property="og:image" content={news?.thumbnail} />
             <meta property="og:url" content={currentUrl} />
-            <meta property="article:author" content={"Alvine"} />
+            <meta property="article:author" content={news?.author} />
             <meta
               property="article:published_time"
               content={news?.published_at}
             />
 
             {/* Twitter Card Meta Tags */}
-            <meta name="twitter:card" content={news?.thumbnail} />
+            <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={news?.title} />
             <meta name="twitter:description" content={news?.description} />
             <meta name="twitter:image" content={news?.thumbnail} />
-            <meta name="twitter:creator" content={"Alvine"} />
+            <meta name="twitter:creator" content={news?.author} />
             <Script
               async
               src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
