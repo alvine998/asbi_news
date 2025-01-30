@@ -258,7 +258,7 @@ DetailNews.getLayout = (page: ReactElement) => (
     categories={(page.props as any).categories || []}
     ads={(page.props as any).ads || []}
     breakingNews={(page.props as any).breaking_news || []}
-    news={(page.props as any).detail_newsnews || null}
+    news={(page.props as any).detail_news || null}
   >
     {page}
   </Layout>

@@ -33,6 +33,7 @@ export default function Layout({
       setCurrentUrl(`${window.location.origin}${router.asPath}`);
     }
   }, [router]);
+
   return (
     <div>
       <Head>
