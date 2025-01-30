@@ -25,11 +25,11 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
   const pathname = usePathname();
   let news = detail_news;
 
-  const [currentUrl, setCurrentUrl] = useState('');
+  const [currentUrl, setCurrentUrl] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // You are on the client-side now
       setCurrentUrl(`${window.location.origin}${router.asPath}`);
     }
@@ -77,15 +77,15 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             <meta property="og:title" content={news?.title} />
             <meta property="og:description" content={news?.description} />
             <meta property="og:image" content={news?.thumbnail} />
+            <meta property="og:image:type" content="image/jpeg" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <meta property="og:url" content={currentUrl} />
             <meta property="article:author" content={news?.author} />
             <meta
               property="article:published_time"
               content={news?.published_at}
             />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:image:type" content="image/jpg" />
 
             {/* Twitter Card Meta Tags */}
             <meta name="twitter:card" content="summary_large_image" />
