@@ -24,7 +24,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
   const params = useParams();
   const pathname = usePathname();
   let news = detail_news;
-  console.log(news,'nnn');
+  console.log(news, "nnn");
 
   const currentUrl = `https://www.asbinews.com${pathname}`;
 
@@ -47,6 +47,10 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
     }
   }, []);
 
+  let keywords = process.env.NEXT_PUBLIC_API_BASE_URL?.includes("localhost")
+    ? news?.keywords
+    : JSON.parse(news?.keywords);
+
   return (
     <div className="min-h-screen">
       {loading ? (
@@ -68,7 +72,10 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             <meta property="og:image" content={news?.thumbnail} />
             <meta property="og:url" content={currentUrl} />
             <meta property="article:author" content={"Alvine"} />
-            <meta property="article:published_time" content={news?.published_at} />
+            <meta
+              property="article:published_time"
+              content={news?.published_at}
+            />
 
             {/* Twitter Card Meta Tags */}
             <meta name="twitter:card" content={news?.thumbnail} />
@@ -197,7 +204,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           </h5>
           <p className="mt-2 text-black text-lg">Kata Kunci</p>
           <div className="flex flex-wrap gap-2 mt-2 mb-8">
-            {news?.keywords?.map((tag: any, index: number) => (
+            {keywords?.map((tag: any, index: number) => (
               <span
                 key={index}
                 className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2"
