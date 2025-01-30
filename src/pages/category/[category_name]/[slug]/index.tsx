@@ -68,7 +68,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             {/* Basic SEO Meta Tags */}
             <title>{news?.title}</title>
             <meta name="description" content={news?.description} />
-            <meta name="author" content={"Alvine"} />
+            <meta name="author" content={news?.author} />
             <meta name="keywords" content={news?.keywords?.toString()} />
             <link rel="canonical" href={currentUrl} />
 
@@ -85,7 +85,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             />
             <meta property="og:image:width" content="1200" />
             <meta property="og:image:height" content="630" />
-            <meta property="og:image:type" content="image/jpeg" />
+            <meta property="og:image:type" content="image/jpg" />
 
             {/* Twitter Card Meta Tags */}
             <meta name="twitter:card" content="summary_large_image" />
