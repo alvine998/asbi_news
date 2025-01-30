@@ -1,5 +1,5 @@
 // components/Input.tsx
-import React from 'react';
+import React from "react";
 
 interface InputProps {
   label?: string;
@@ -10,16 +10,18 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   className?: string;
+  onKeyDown?: any;
 }
 
 const Input: React.FC<InputProps> = ({
   label,
-  type = 'text',
+  type = "text",
   placeholder,
   value,
   onChange,
   error,
-  className = '',
+  className = "",
+  onKeyDown,
 }) => {
   return (
     <div className={`flex flex-col ${className}`}>
@@ -33,8 +35,9 @@ const Input: React.FC<InputProps> = ({
         value={value}
         defaultValue={value}
         onChange={onChange}
+        onKeyDown={onKeyDown}
         className={`w-full px-3 py-1 border text-black ${
-          error ? 'border-red-500' : 'border-gray-300'
+          error ? "border-red-500" : "border-gray-300"
         } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
 

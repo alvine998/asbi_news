@@ -18,7 +18,7 @@ import React, { ReactElement, useEffect, useState } from "react";
  *
  * @returns The component for the index page.
  */
-const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
+const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
   const params: any = useParams();
   const router = useRouter();
   const [page, setPage] = useState<any>(router.query?.page || "1");
@@ -26,6 +26,7 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(false);
+  const [populars, setPopulars] = useState<any[]>([]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -47,7 +48,7 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
           <section className="w-full flex flex-col gap-4">
             <div>
               <h2 className="text-2xl font-semibold mb-4 underline">
-                Berita {params?.category_name}
+                Cari Berita
               </h2>
               {news?.length > 0 ? (
                 <>
@@ -74,7 +75,7 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
                             {moment()?.format("DD MMMM YYYY HH:mm")}
                           </p>
                           <Link
-                            href={`/category/${params?.category_name}/${newsItem?.slug}`}
+                            href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
                             className="text-blue-600 hover:underline font-medium"
                           >
                             Baca Selengkapnya
@@ -160,7 +161,7 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
                   )}
                 </>
               ) : (
-                <h2 className="mt-2 text-2xl text-black ">Belum Ada Berita</h2>
+                <h2 className="mt-2 text-2xl text-black ">Berita Tidak Ditemukan</h2>
               )}
             </div>
           </section>
@@ -206,25 +207,20 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
-  const { query } = context;
+  const { query, params } = context;
   try {
-    const [news, popular_news, ads, categories, breaking_news] =
-      await Promise.all([
-        axiosInstance.get(
-          `/news?pagination=true&size=${query?.size}&status=publish&category_name=${query?.category_name}`
-        ),
-        axiosInstance.get(`/news?pagination=false&status=publish&popular=1`),
-        axiosInstance.get(`/ads?type=header`),
-        axiosInstance.get("/categories"),
-        axiosInstance.get(
-          `/news?pagination=false&status=publish&breaking_news=1`
-        ),
-      ]);
+    const [news, popular_news, ads, categories] = await Promise.all([
+      axiosInstance.get(
+        `/news?pagination=true&size=${query?.size || 10}&status=publish&search=${params?.q}`
+      ),
+      axiosInstance.get(`/news?pagination=false&status=publish&popular=1`),
+      axiosInstance.get(`/ads?type=header`),
+      axiosInstance.get("/categories"),
+    ]);
 
     return {
       props: {
         popular_news: popular_news.data?.items,
-        breaking_news: breaking_news.data?.items,
         news: news.data?.items,
         categories: categories?.data?.items || [],
         ads: ads?.data?.items || [],
@@ -240,7 +236,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
   }
 };
 
-ListCategory.getLayout = (page: ReactElement) => (
+SearchNews.getLayout = (page: ReactElement) => (
   <Layout
     categories={(page.props as any).categories || []}
     ads={(page.props as any).ads || []}
@@ -250,4 +246,4 @@ ListCategory.getLayout = (page: ReactElement) => (
   </Layout>
 );
 
-export default ListCategory;
+export default SearchNews;

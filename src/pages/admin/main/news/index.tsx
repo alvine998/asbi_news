@@ -15,45 +15,122 @@ import {
 } from "@/pages/api/category";
 import { deleteNews, getNews } from "@/pages/api/news";
 import { INews } from "@/types/news";
+import axiosInstance from "@/utils/api";
+import axios from "axios";
 import { getDatabase, set } from "firebase/database";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import {
+  PencilIcon,
+  ToggleLeftIcon,
+  ToggleRightIcon,
+  TrashIcon,
+} from "lucide-react";
 import moment from "moment";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const News: NextPageWithLayout = () => {
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query } = context;
+  const {
+    page = 0,
+    size = 10,
+    search = "",
+    status = "",
+    headline = "",
+    breaking_news = "",
+  } = query;
+  try {
+    const response = await axiosInstance.get(
+      `/news?search=${search || ""}&page=${page || 0}&size=${
+        size || 10
+      }&pagination=true&status=${status}&headline=${headline}&breaking_news=${breaking_news}`
+    ); // Fetch data
+
+    const categories: any = await axiosInstance.get("/categories");
+    return {
+      props: {
+        table: response.data, // Pass data as props
+        filters: query,
+        categories: categories?.data?.items || [],
+      },
+    };
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+
+const News: NextPageWithLayout = ({ table, filters, categories }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [news, setNews] = useState<any[]>([]);
-  const [filtered, setFiltered] = useState<any[]>([]);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterText, setFilterText] = useState<string>("");
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  // Firebase Database Reference
-  const db = getDatabase();
-
-  const fetchNews = async () => {
-    setLoading(true);
-    const data: any = await getNews();
-    setNews(data);
-    setFiltered(data); // Set initial filtered categories
-    setLoading(false);
-  };
-
-  const fetchCategories = async () => {
-    const data: any = await getCategories();
-    setCategories(data);
-  };
 
   const handleDelete = async (e: any) => {
     e.preventDefault();
-    await deleteNews(data?.id);
-    fetchNews();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/news/delete", data); // Fetch from your API route
+      toast.success("Berita Berhasil Dihapus", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  const toggleHandler = async (data: any, updateData: string) => {
+    try {
+      const payload1 = {
+        headline: data.headline == 1 ? 0 : 1,
+      };
+      const payload2 = {
+        breaking_news: data.breaking_news == 1 ? 0 : 1,
+      };
+      const payload = {
+        ...data,
+        ...(updateData == "headline" ? payload1 : payload2),
+      };
+      const response = await axios.post("/api/express/news/update", payload); // Fetch from your API route
+      toast.success(updateData + " Berhasil Diubah", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const columns = [
@@ -64,8 +141,7 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Kategori",
-      selector: (row: INews) =>
-        categories?.find((c: any) => c.id === row.category)?.name,
+      selector: (row: INews) => row?.category_name,
       sortable: true,
     },
     {
@@ -100,7 +176,48 @@ const News: NextPageWithLayout = () => {
     },
     {
       name: "Headline",
-      selector: (row: INews) => (row.headline == 1 ? "Ya" : "Tidak"),
+      selector: (row: INews) => (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              toggleHandler(row, "headline");
+            }}
+            className={`w-12 h-6 rounded-full ${
+              row?.headline == 1 ? "bg-green-500" : "bg-gray-300"
+            }`}
+          >
+            <div
+              className={`w-6 h-6 bg-white rounded-full shadow transition-transform transform ${
+                row?.headline == 1 ? "translate-x-6" : ""
+              }`}
+            ></div>
+          </button>
+        </>
+      ),
+      sortable: true,
+    },
+    {
+      name: "Breaking News",
+      selector: (row: INews) => (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              toggleHandler(row, "breaking_news");
+            }}
+            className={`w-12 h-6 rounded-full ${
+              row?.breaking_news == 1 ? "bg-green-500" : "bg-gray-300"
+            }`}
+          >
+            <div
+              className={`w-6 h-6 bg-white rounded-full shadow transition-transform transform ${
+                row?.breaking_news == 1 ? "translate-x-6" : ""
+              }`}
+            ></div>
+          </button>
+        </>
+      ),
       sortable: true,
     },
     {
@@ -111,7 +228,7 @@ const News: NextPageWithLayout = () => {
     {
       name: "Tanggal Publish",
       selector: (row: INews) =>
-        moment(row?.publishedAt)?.format("DD-MM-YYYY HH:mm"),
+        moment(row?.published_at)?.format("DD-MM-YYYY HH:mm"),
       sortable: true,
     },
     {
@@ -144,55 +261,15 @@ const News: NextPageWithLayout = () => {
     },
   ];
 
-  useEffect(() => {
-    fetchNews();
-    fetchCategories();
-  }, [db]);
-
-  useEffect(() => {
-    const { query }: any = router.query; // Extract 'query' from the URL
-    if (query) {
-      const filtered = news.filter((item) =>
-        item.name.toLowerCase().includes(query?.search.toString().toLowerCase())
-      );
-      setFiltered(filtered);
-    } else {
-      setFiltered(news); // If no query, show all news
-    }
-  }, [router.query, news]); // Run effect whenever the query or categories change
-
-  // Handle change in page
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Handle rows per page change
-  const handleRowsPerPageChange = (rowsPerPage: number) => {
-    setItemsPerPage(rowsPerPage);
-    setCurrentPage(1); // Reset to the first page on rows change
-  };
-
-  // Filter data by the search text
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterText(event.target.value);
-    const filtered = news.filter((item) =>
-      item.name.toLowerCase().includes(event.target.value.toLowerCase())
-    );
-    setFiltered(filtered);
-  };
-
-  // Calculate the data to be displayed based on the current page and rows per page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
-
   return (
     <div>
       <div className="flex px-4 items-center lg:flex-row flex-col justify-between w-full gap-2">
         <Input
           placeholder="Cari Berita..."
           type="search"
-          onChange={handleFilterChange}
+          onChange={(e) => {
+            router.push(`?search=${e.target.value}`);
+          }}
           className="lg:w-auto w-full"
         />
         <Button
@@ -205,12 +282,11 @@ const News: NextPageWithLayout = () => {
       </div>
       <Table
         columns={columns}
-        data={currentItems}
-        handlePageChange={handlePageChange}
-        handleRowsPerPageChange={handleRowsPerPageChange}
-        itemsPerPage={itemsPerPage}
-        dataLength={filtered.length}
-        loading={loading}
+        data={table?.items}
+        handlePageChange={() => {}}
+        handleRowsPerPageChange={() => {}}
+        itemsPerPage={table?.size || 10}
+        dataLength={table?.total_items}
       />
 
       {isOpen && key === "delete" && (

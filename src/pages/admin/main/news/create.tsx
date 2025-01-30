@@ -16,40 +16,66 @@ import {
 } from "@/pages/api/category";
 import { createNews, getNews } from "@/pages/api/news";
 import { createSlug } from "@/utils";
+import axiosInstance from "@/utils/api";
+import axios from "axios";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const CreateNews: NextPageWithLayout = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const router = useRouter();
-  const db = getDatabase();
-
-  const fetchCategories = async () => {
-    setLoading(true);
-    const data: any = await getCategories();
-    setCategories(data);
-    setLoading(false);
-  };
-  useEffect(() => {
-    fetchCategories();
-  }, [db]);
-  const handleCreate = async (values: Record<string, any>) => {
-    const payload = {
-      ...values,
-      category_name: categories?.find(
-        (category) => category.id === values.category
-      )?.name,
-      slug: createSlug(values.title),
-      viewers: 0,
-      status: values.status,
-      headline: values.headline ? 1 : 0,
-      publishedAt: values.status === "publish" ? values?.publishedAt : null,
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query, params } = context;
+  const { id = params?.id } = query;
+  try {
+    const categories: any = await axiosInstance.get("/categories?pagination=false");
+    return {
+      props: {
+        categories: categories?.data?.items || [],
+      },
     };
-    await createNews(payload);
-    router.push("/admin/main/news");
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+
+const CreateNews: NextPageWithLayout = ({ categories }: any) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const handleCreate = async (values: Record<string, any>) => {
+    try {
+      //
+      const response = await axios.post("/api/express/news/create", {
+        ...values,
+        slug: createSlug(values.title),
+        thumbnail: values?.image
+      });
+      toast.success("Berita Berhasil Ditambahkan", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("/admin/main/news");
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const NewsForm: any = [
@@ -61,10 +87,10 @@ const CreateNews: NextPageWithLayout = () => {
       required: true,
     },
     {
-      name: "category",
+      name: "category_id",
       label: "Kategori Berita",
       type: "select",
-      options: categories.map((category) => ({
+      options: categories.map((category: any) => ({
         label: category.name,
         value: category.id,
       })),
@@ -121,6 +147,15 @@ const CreateNews: NextPageWithLayout = () => {
       ],
     },
     {
+      name: "breaking_news",
+      label: "Breaking News",
+      type: "select",
+      options: [
+        { label: "Ya", value: 1 },
+        { label: "Tidak", value: 0 },
+      ],
+    },
+    {
       name: "status",
       label: "Status",
       type: "select",
@@ -130,7 +165,7 @@ const CreateNews: NextPageWithLayout = () => {
       ],
     },
     {
-      name: "publishedAt",
+      name: "published_at",
       label: "Tanggal Publikasi",
       type: "datetime-local",
     },
@@ -144,7 +179,12 @@ const CreateNews: NextPageWithLayout = () => {
   return (
     <div className="bg-white p-4 rounded">
       <h1 className="text-2xl font-bold">Buat Berita</h1>
-      <Button onClick={() => router.back()} type="button" variant="link" className="my-2">
+      <Button
+        onClick={() => router.back()}
+        type="button"
+        variant="link"
+        className="my-2"
+      >
         Kembali
       </Button>
       {loading ? (

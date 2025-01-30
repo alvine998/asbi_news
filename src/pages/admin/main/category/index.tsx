@@ -7,52 +7,127 @@ import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 import { useModal } from "@/hooks/useModal";
 import type { NextPageWithLayout } from "@/pages/_app";
-import {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  updateCategory,
-} from "@/pages/api/category";
+import axiosInstance from "@/utils/api";
+import axios from "axios";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const Category: NextPageWithLayout = () => {
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query } = context;
+  const { page = 0, size = 10, search = "" } = query;
+  try {
+    const response = await axiosInstance.get(
+      `/categories?search=${search || ""}&page=${page || 0}&size=${
+        size || 10
+      }&pagination=true`
+    ); // Fetch data
+    return {
+      props: {
+        table: response.data, // Pass data as props
+        filters: query,
+      },
+    };
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+
+const Category: NextPageWithLayout = ({ table }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
   const [filterText, setFilterText] = useState<string>("");
-  // Firebase Database Reference
-  const db = getDatabase();
-
-  const fetchCategories = async () => {
-    const data: any = await getCategories();
-    setCategories(data);
-    setFilteredCategories(data); // Set initial filtered categories
-  };
 
   const handleCreate = async (values: Record<string, any>) => {
-    await createCategory(values);
-    fetchCategories();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/category/create", values); // Fetch from your API route
+      // fetchData();
+      toast.success("Kategori Berhasil Ditambahkan", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch category. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const handleUpdate = async (values: Record<string, any>) => {
-    await updateCategory(data?.id, values);
-    fetchCategories();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/category/update", {
+        ...values,
+        id: data?.id,
+      });
+      toast.success("Kategori Berhasil Diubah", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch category. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const handleDelete = async (e: any) => {
     e.preventDefault();
-    await deleteCategory(data?.id);
-    fetchCategories();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/category/delete", data); // Fetch from your API route
+      toast.success("Kategori Berhasil Dihapus", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch category. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const columns = [
@@ -112,57 +187,10 @@ const Category: NextPageWithLayout = () => {
       label: "Deskripsi",
       type: "textarea",
       placeholder: "Masukkan Deskripsi",
-      required: true,
+      required: false,
       defaultValue: data?.description,
     },
   ];
-
-  useEffect(() => {
-    fetchCategories();
-  }, [db]);
-
-  // Filter categories based on search query from the URL
-  useEffect(() => {
-    const { query }: any = router.query; // Extract 'query' from the URL
-    if (query) {
-      const filtered = categories.filter((category) =>
-        category.name
-          .toLowerCase()
-          .includes(query?.search.toString().toLowerCase())
-      );
-      setFilteredCategories(filtered);
-    } else {
-      setFilteredCategories(categories); // If no query, show all categories
-    }
-  }, [router.query, categories]); // Run effect whenever the query or categories change
-
-  // Handle change in page
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Handle rows per page change
-  const handleRowsPerPageChange = (rowsPerPage: number) => {
-    setItemsPerPage(rowsPerPage);
-    setCurrentPage(1); // Reset to the first page on rows change
-  };
-
-  // Filter data by the search text
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterText(event.target.value);
-    const filtered = categories.filter((category) =>
-      category.name.toLowerCase().includes(event.target.value.toLowerCase())
-    );
-    setFilteredCategories(filtered);
-  };
-
-  // Calculate the data to be displayed based on the current page and rows per page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredCategories.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
 
   return (
     <div>
@@ -170,7 +198,7 @@ const Category: NextPageWithLayout = () => {
         <Input
           placeholder="Cari Kategori..."
           type="search"
-          onChange={handleFilterChange}
+          onChange={(e) => setFilterText(e.target.value)}
           className="lg:w-auto w-full"
         />
         <Button
@@ -185,11 +213,11 @@ const Category: NextPageWithLayout = () => {
       </div>
       <Table
         columns={columns}
-        data={currentItems}
-        handlePageChange={handlePageChange}
-        handleRowsPerPageChange={handleRowsPerPageChange}
-        itemsPerPage={itemsPerPage}
-        dataLength={filteredCategories.length}
+        data={table?.items}
+        handlePageChange={() => {}}
+        handleRowsPerPageChange={() => {}}
+        itemsPerPage={table?.size}
+        dataLength={table?.total_items}
       />
 
       {isOpen && (key === "create" || key === "update") && (

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import TextEditor from "./TextEditor";
 import KeywordInput from "./KeywordInput";
 import { toast } from "react-toastify";
+import axios from "axios";
+import axiosInstance from "@/utils/api";
 
 type Field = {
   name: string;
@@ -34,34 +36,34 @@ type FormGeneratorProps = {
 const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [base64Image, setBase64Image] = useState<any>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    const { name } = e.target;
-    if (selectedFile) {
-      // Check file size (2MB limit)
-      if (selectedFile.size > 2 * 1024 * 1024) {
-        toast.error("File size exceeds 2MB. Please select a smaller image.");
-        return;
-      }
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const selectedFile = e.target.files?.[0];
+  //   const { name } = e.target;
+  //   if (selectedFile) {
+  //     // Check file size (2MB limit)
+  //     if (selectedFile.size > 2 * 1024 * 1024) {
+  //       toast.error("File size exceeds 2MB. Please select a smaller image.");
+  //       return;
+  //     }
 
-      setFile(selectedFile);
+  //     setFile(selectedFile);
 
-      // Convert the image to Base64 using FileReader
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          setBase64Image(reader.result as string);
-          setFormData((prev) => ({
-            ...prev,
-            [name]: reader.result as string,
-          }));
-        }
-      };
-      reader.readAsDataURL(selectedFile); // Read the image file as Base64
-    }
-  };
+  //     // Convert the image to Base64 using FileReader
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       if (reader.result) {
+  //         setBase64Image(reader.result as string);
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           [name]: reader.result as string,
+  //         }));
+  //       }
+  //     };
+  //     reader.readAsDataURL(selectedFile); // Read the image file as Base64
+  //   }
+  // };
 
   const handleKeywordsChange = (name: string, keywords: string[]) => {
     setFormData((prev) => ({
@@ -91,10 +93,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
     }
   };
 
-  const handleChangeEditor = (
-    value: string,
-    name: string
-  ) => {
+  const handleChangeEditor = (value: string, name: string) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -103,7 +102,29 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({...formData, image: file});
+  };
+
+  // const [file, setFile] = useState<File | null>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const formData = new FormData();
+      formData.append("image", file);
+      const response: any = await axiosInstance.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setFile(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"}${response?.data?.filePath}`)
+    };
+
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -144,9 +165,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
               <TextEditor
                 value={field.defaultValue || ""}
                 placeholder={field.placeholder}
-                onChange={(e: any) =>
-                  handleChangeEditor(e, "content")
-                }
+                onChange={(e: any) => handleChangeEditor(e, "content")}
               />
             </>
           ) : field.type === "keywords" ? (
@@ -169,14 +188,14 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
                 id={field.name}
                 type={"file"}
                 name={field.name}
-                onChange={handleFileChange}
+                onChange={handleUpload}
                 accept={field.accept}
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div>
-                {(base64Image || field.defaultValue) && (
+                {(file || field.defaultValue) && (
                   <img
-                    src={base64Image || field.defaultValue}
+                    src={file || field.defaultValue}
                     alt="Preview"
                     className="mt-2 w-auto h-auto"
                   />

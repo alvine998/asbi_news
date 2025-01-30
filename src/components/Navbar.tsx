@@ -14,40 +14,29 @@ import { getAds } from "@/pages/api/ads";
 import Loader from "./Loader";
 import { shuffleArray } from "@/utils";
 import moment from "moment";
-import 'moment/locale/id'; // Import Indonesian locale
+import "moment/locale/id"; // Import Indonesian locale
+import { GetServerSideProps } from "next";
+import axiosInstance from "@/utils/api";
+import { useRouter } from "next/router";
 
 // Set the locale to Indonesian
-moment.locale('id');
+moment.locale("id");
 
-export default function Navbar() {
+interface Props {
+  categories: any[];
+  ads: any[];
+}
+
+export default function Navbar({ categories, ads }: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [ads, setAds] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
   const sidebarRef = useRef<HTMLDivElement | null>(null);
-  const db = getDatabase();
   const params = useParams();
   const pathname = usePathname();
-
-  const fetchCategories = async () => {
-    setLoading(true);
-    try {
-      const data: any = await getCategories();
-      const ads: any = await getAds();
-      setCategories(data);
-      setAds(shuffleArray(ads)[0]);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchCategories();
-  }, [db]);
+  const router = useRouter();
 
   useEffect(() => {
     // Function to handle clicks outside of the sidebar
@@ -69,9 +58,22 @@ export default function Navbar() {
     };
   }, []);
 
+  const [query, setQuery] = useState<string>(params?.q as string || "");
+
+  const handleSearch = () => {
+    // Call your search function or API here
+    router.push(`/search/${query}`);
+  };
+
+  const handleKeyDown = (event: any) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div>
-      <header className="bg-white shadow py-2 lg:px-28 px-2">
+      <header className="bg-white shadow py-2 lg:px-20 px-2">
         <div className="container mx-auto flex justify-between items-center">
           <Link href={"/"}>
             <img
@@ -82,7 +84,12 @@ export default function Navbar() {
           </Link>
           <nav className="space-x-2 lg:flex hidden gap-2 items-center">
             <p>{moment().format("dddd, DD MMMM YYYY")}</p>
-            <Input placeholder="Cari berita disini..." />
+            <Input
+              placeholder="Cari berita disini..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
           </nav>
           <button className="lg:hidden block" onClick={toggleSidebar}>
             <AlignJustifyIcon size={24} color="black" />
@@ -154,7 +161,7 @@ export default function Navbar() {
         </div>
       </header>
 
-      <div className="px-4 lg:px-28 mt-4">
+      <div className="px-4 lg:px-20 mt-4">
         {/* Ad Space */}
         <div className="w-full mb-6 flex flex-col gap-2 justify-center items-center">
           <div className="bg-gray-200 text-gray-700 text-center rounded-lg lg:w-full w-full">
@@ -163,7 +170,7 @@ export default function Navbar() {
               <Loader />
             ) : (
               <img
-                src={ads?.image}
+                src={shuffleArray(ads)?.[0]?.image}
                 alt="ads"
                 className="w-full lg:h-[250px] h-[100px] rounded"
               />
@@ -181,7 +188,7 @@ export default function Navbar() {
           >
             <button
               className={`${
-                params?.category_name === "/"
+                params?.category_name === "/" || !params?.category_name
                   ? "text-blue-700"
                   : "text-black hover:text-blue-700"
               } font-semibold lg:px-4 px-0 py-1 rounded-md  duration-200 transition-colors`}

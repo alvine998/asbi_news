@@ -5,6 +5,7 @@ export interface INews {
     thumbnail: string;
     content: any;
     headline: number;
+    breaking_news: number;
     slug: string;
     status: string;
     category: string;
@@ -14,7 +15,7 @@ export interface INews {
     editor: string;
     source: string;
     keywords: string[];
-    publishedAt: string;
+    published_at: string;
     createdAt: string;
     updatedAt: string;
 }

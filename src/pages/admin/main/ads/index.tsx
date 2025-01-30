@@ -14,52 +14,137 @@ import {
   getCategories,
   updateCategory,
 } from "@/pages/api/category";
+import axiosInstance from "@/utils/api";
+import axios from "axios";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
+import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-const Ads: NextPageWithLayout = () => {
+import { toast } from "react-toastify";
+
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query } = context;
+  const { page = 0, size = 10, search = "" } = query;
+  try {
+    const response = await axiosInstance.get(
+      `/ads?search=${search || ""}&page=${page || 0}&size=${
+        size || 10
+      }&pagination=true`
+    ); // Fetch data
+    return {
+      props: {
+        table: response.data, // Pass data as props
+        filters: query,
+      },
+    };
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+
+const Ads: NextPageWithLayout = ({ table, filters }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterText, setFilterText] = useState<string>("");
   // Firebase Database Reference
-  const db = getDatabase();
-
-  const fetchAds = async () => {
-    const data: any = await getAds();
-    setCategories(data);
-    setFilteredCategories(data); // Set initial filtered categories
-  };
 
   const handleCreate = async (values: Record<string, any>) => {
-    await createAds(values);
-    fetchAds();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/ads/create", {
+        ...values,
+        width: values?.type == "header" ? 1080 : 300,
+        height: values?.type == "header" ? 300 : 600,
+      }); // Fetch from your API route
+      toast.success("Iklan Berhasil Ditambahkan", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const handleUpdate = async (values: Record<string, any>) => {
-    await updateAds(data?.id, values);
-    fetchAds();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/ads/update", {
+        ...values,
+        id: data?.id,
+      });
+      toast.success("Iklan Berhasil Diubah", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const handleDelete = async (e: any) => {
     e.preventDefault();
-    await deleteAds(data?.id);
-    fetchAds();
-    closeModal();
+    try {
+      const response = await axios.post("/api/express/ads/delete", data); // Fetch from your API route
+      toast.success("Iklan Berhasil Dihapus", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("");
+      closeModal();
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const columns = [
     {
       name: "Nama Iklan",
-      selector: (row: any) => row.name,
+      selector: (row: any) => row.title,
       sortable: true,
     },
     {
@@ -103,12 +188,12 @@ const Ads: NextPageWithLayout = () => {
 
   const AdsForm: any = [
     {
-      name: "name",
+      name: "title",
       label: "Nama Iklan",
       type: "text",
       placeholder: "Masukkan Nama Iklan",
       required: true,
-      defaultValue: data?.name,
+      defaultValue: data?.title,
     },
     {
       name: "image",
@@ -118,52 +203,18 @@ const Ads: NextPageWithLayout = () => {
       required: true,
       defaultValue: data?.image,
     },
+    {
+      name: "type",
+      label: "Jenis Iklan",
+      type: "select",
+      options: [
+        { value: "header", label: "Header" },
+        { value: "side", label: "Pamflet" },
+      ],
+      required: true,
+      defaultValue: data?.type,
+    },
   ];
-
-  useEffect(() => {
-    fetchAds();
-  }, [db]);
-
-  // Filter categories based on search query from the URL
-  useEffect(() => {
-    const { query }: any = router.query; // Extract 'query' from the URL
-    if (query) {
-      const filtered = categories.filter((item) =>
-        item.name.toLowerCase().includes(query?.search.toString().toLowerCase())
-      );
-      setFilteredCategories(filtered);
-    } else {
-      setFilteredCategories(categories); // If no query, show all categories
-    }
-  }, [router.query, categories]); // Run effect whenever the query or categories change
-
-  // Handle change in page
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // Handle rows per page change
-  const handleRowsPerPageChange = (rowsPerPage: number) => {
-    setItemsPerPage(rowsPerPage);
-    setCurrentPage(1); // Reset to the first page on rows change
-  };
-
-  // Filter data by the search text
-  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterText(event.target.value);
-    const filtered = categories.filter((item) =>
-      item.name.toLowerCase().includes(event.target.value.toLowerCase())
-    );
-    setFilteredCategories(filtered);
-  };
-
-  // Calculate the data to be displayed based on the current page and rows per page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredCategories.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
 
   return (
     <div>
@@ -171,7 +222,9 @@ const Ads: NextPageWithLayout = () => {
         <Input
           placeholder="Cari Iklan..."
           type="search"
-          onChange={handleFilterChange}
+          onChange={(e) => {
+            router.push(`?search=${e.target.value}`);
+          }}
           className="lg:w-auto w-full"
         />
         <Button
@@ -186,11 +239,11 @@ const Ads: NextPageWithLayout = () => {
       </div>
       <Table
         columns={columns}
-        data={currentItems}
-        handlePageChange={handlePageChange}
-        handleRowsPerPageChange={handleRowsPerPageChange}
-        itemsPerPage={itemsPerPage}
-        dataLength={filteredCategories.length}
+        data={table?.items}
+        handlePageChange={() => {}}
+        handleRowsPerPageChange={() => {}}
+        itemsPerPage={table?.size || 10}
+        dataLength={table?.total_items}
       />
 
       {isOpen && (key === "create" || key === "update") && (

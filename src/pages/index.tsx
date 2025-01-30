@@ -7,7 +7,7 @@ import BannerSlider from "@/components/Slider";
 import { AlignJustifyIcon } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { NextPageWithLayout } from "./_app";
 import { getDatabase } from "firebase/database";
 import { getNews, getNewsPerCategory } from "./api/news";
@@ -16,17 +16,30 @@ import Loader from "@/components/Loader";
 import moment from "moment";
 import { filterAndCombine, formatCurrency, shuffleArray } from "@/utils";
 import axios from "axios";
+import { GetServerSideProps } from "next";
+import axiosInstance from "@/utils/api";
 
-const Home: NextPageWithLayout = () => {
-  const [news, setNews] = useState<any[]>([]);
-  const [headlines, setHeadlines] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [populars, setPopulars] = useState<any[]>([]);
-  const [otherNews, setOtherNews] = useState<any[]>([]);
+interface Props {
+  categories: any;
+}
+
+const Home: NextPageWithLayout = ({
+  breaking_news,
+  headline_news,
+  news_today,
+  recommended_news,
+  popular_news,
+  categories,
+}: any) => {
+  const [loading, setLoading] = useState<boolean>(true);
   const [kurs, setKurs] = useState<any>({});
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Firebase Database Reference
-  const db = getDatabase();
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setLoading(false);
+    }
+  }, []);
 
   const getKurs = async () => {
     try {
@@ -34,45 +47,14 @@ const Home: NextPageWithLayout = () => {
         `https://api.frankfurter.dev/v1/latest?base=USD`
       );
       setKurs(result.data.rates);
-      localStorage.setItem("kurs", JSON.stringify(result.data.rates));
+      localStorage.setItem(
+        "kurs",
+        JSON.stringify(moment().format("YYYY-MM-DD"))
+      );
     } catch (error) {
       console.log(error);
     }
   };
-
-  const fetchNews = async () => {
-    setLoading(true);
-    try {
-      const data: any = await getNews("uptodate");
-      const publishData: any = await getNews("publish");
-      const popularData: any = await getNews("popular");
-      const finalData = filterAndCombine(publishData, popularData);
-      const newsUpdate = filterAndCombine(data, publishData);
-
-      let headlines: any = await getNews("headline");
-      const publishHeadlines: any = filterAndCombine(headlines, publishData);
-      const finalheadlines = publishHeadlines?.map((item: INews) => ({
-        id: item?.id,
-        title: item?.title,
-        thumbnail: item?.thumbnail,
-        link: `/category/${item?.category_name}/${item?.slug}`,
-      }));
-
-      const others = await getNewsPerCategory();
-      const newOthers = Object.values(others).flatMap((item: any) => item);
-      setOtherNews(newOthers);
-      setNews(newsUpdate);
-      setPopulars(finalData);
-      setHeadlines(finalheadlines);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchNews();
-  }, [db]);
 
   useEffect(() => {
     const existKurs: any = localStorage.getItem("kurs");
@@ -80,7 +62,7 @@ const Home: NextPageWithLayout = () => {
     if (!existKurs) {
       getKurs();
     }
-    if (JSON.parse(existKurs)?.date !== moment().format("YYYY-MM-DD")) {
+    if (moment().format("YYYY-MM-DD") !== JSON.parse(existKurs)) {
       getKurs();
     }
   }, []);
@@ -94,6 +76,13 @@ const Home: NextPageWithLayout = () => {
     { code: "KRW", locale: "ko-KR", currency: "KRW" },
     { code: "CNY", locale: "zh-CN", currency: "CNY" },
   ];
+  
+  const finalheadlines = headline_news?.map((item: INews) => ({
+    id: item?.id,
+    title: item?.title,
+    thumbnail: item?.thumbnail,
+    link: `/category/${item?.category_name}/${item?.slug}`,
+  }));
   return (
     <div className="min-h-screen bg-gray-100">
       <Head>
@@ -132,7 +121,7 @@ const Home: NextPageWithLayout = () => {
         <Loader />
       ) : (
         <main className="container mx-auto py-4 lg:px-4 px-4">
-          <BannerSlider banners={headlines} />
+          <BannerSlider banners={finalheadlines} />
           <div className="mb-8 flex lg:flex-row flex-col justify-between w-full mt-4 gap-6">
             {/* Column 1 */}
             <section className="w-full flex flex-col gap-4">
@@ -141,54 +130,46 @@ const Home: NextPageWithLayout = () => {
                   Berita Terkini
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {/* News Card */}
-                  {news
-                    ?.sort((a: any, b: any) =>
-                      moment(b.createdAt).diff(a.createdAt)
-                    )
-                    ?.slice(0, 6)
-                    .map((newsItem) => (
-                      <div
-                        key={newsItem}
-                        className="bg-white shadow-md rounded-lg overflow-hidden"
-                      >
-                        <img
-                          src={newsItem?.thumbnail}
-                          alt={`News ${newsItem?.id}`}
-                          className="w-full h-48 object-cover"
-                        />
-                        <div className="p-4">
-                          <h3 className="lg:text-md font-semibold mb-2">
-                            {newsItem?.title}
-                          </h3>
-                          <p className="text-gray-600 mb-4">
-                            {newsItem?.description?.substring(0, 100)}...
-                          </p>
-                          <p className="text-black mb-2 font-bold text-xs">
-                            {moment(newsItem?.createdAt).format("DD MMMM YYYY")}
-                          </p>
-                          <Link
-                            href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                            className="text-blue-600 hover:underline font-medium"
-                          >
-                            Baca Selengkapnya
-                          </Link>
-                        </div>
+                  {news_today.map((newsItem: any) => (
+                    <div
+                      key={newsItem}
+                      className="bg-white shadow-md rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={newsItem?.thumbnail}
+                        alt={`News ${newsItem?.id}`}
+                        className="w-full h-48 object-cover"
+                      />
+                      <div className="p-4">
+                        <h3 className="lg:text-md font-semibold mb-2">
+                          {newsItem?.title}
+                        </h3>
+                        <p className="text-gray-600 mb-4">
+                          {newsItem?.description?.substring(0, 100)}...
+                        </p>
+                        <p className="text-black mb-2 font-bold text-xs">
+                          {moment(newsItem?.createdAt).format("DD MMMM YYYY")}
+                        </p>
+                        <Link
+                          href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                          className="text-blue-600 hover:underline font-medium"
+                        >
+                          Baca Selengkapnya
+                        </Link>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Rekomendasi Berita */}
               <div>
                 <h2 className="text-2xl font-semibold mb-4 underline">
                   Rekomendasi Berita Untukmu
                 </h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {/* News Card */}
-                  {shuffleArray(news)
+                  {shuffleArray(recommended_news)
                     ?.slice(0, 3)
-                    .map((newsItem) => (
+                    .map((newsItem: any) => (
                       <div
                         key={newsItem}
                         className="bg-white shadow-md rounded-lg overflow-hidden"
@@ -217,12 +198,10 @@ const Home: NextPageWithLayout = () => {
                 </div>
               </div>
 
-              {/* Berita Per Kategori */}
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {/* News Card */}
-                {otherNews.map((newsItem) => (
+                {recommended_news.map((newsItem: any) => (
                   <div
-                    key={newsItem}
+                    key={newsItem?.id}
                     className="bg-white shadow-md rounded-lg overflow-hidden"
                   >
                     <img
@@ -260,7 +239,7 @@ const Home: NextPageWithLayout = () => {
                   </h2>
                   <div className="flex flex-col gap-2">
                     {/* Popular News Card */}
-                    {populars?.map((newsItem: INews) => (
+                    {popular_news?.map((newsItem: INews) => (
                       <Link
                         key={newsItem?.id}
                         href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
@@ -273,7 +252,7 @@ const Home: NextPageWithLayout = () => {
                           {newsItem?.description?.slice(0, 100)}
                         </p>
                         <p className="text-gray-800 font-bold lg:text-md text-xs">
-                          {moment(newsItem?.publishedAt)?.format(
+                          {moment(newsItem?.published_at)?.format(
                             "DD MMMM YYYY HH:mm"
                           )}
                         </p>
@@ -306,6 +285,10 @@ const Home: NextPageWithLayout = () => {
                   * Kurs diperbarui setiap 1 hari sekali pada 00:00 WIB
                 </p>
               </div>
+
+              <div className="mt-4 w-full lg:h-[500px] h-[300px] py-2 px-4 bg-blue-200 shadow rounded flex justify-center items-center">
+                <p>Add Here 500 x 300 px</p>
+              </div>
             </section>
           </div>
         </main>
@@ -314,6 +297,57 @@ const Home: NextPageWithLayout = () => {
   );
 };
 
-Home.getLayout = (page) => <Layout>{page}</Layout>;
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query } = context;
+  try {
+    const [
+      breaking_news,
+      headline_news,
+      news_today,
+      recommended_news,
+      ads,
+      categories,
+    ] = await Promise.all([
+      axiosInstance.get(
+        `/news?pagination=false&status=publish&breaking_news=1`
+      ),
+      axiosInstance.get(
+        `/news?pagination=true&size=5&status=publish&headline=1`
+      ),
+      axiosInstance.get(`/news?pagination=false&page=0&size=6&status=publish`),
+      axiosInstance.get(`/news?pagination=false&status=publish&recommended=1`),
+      axiosInstance.get(`/ads?type=header`),
+      axiosInstance.get("/categories"),
+    ]);
+
+    return {
+      props: {
+        breaking_news: breaking_news.data?.items,
+        headline_news: headline_news.data?.items,
+        news_today: news_today.data?.items,
+        recommended_news: recommended_news.data?.items,
+        categories: categories?.data?.items || [],
+        ads: ads?.data?.items || [],
+      },
+    };
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+
+Home.getLayout = (page: ReactElement) => (
+  <Layout
+    categories={(page.props as any).categories || []}
+    ads={(page.props as any).ads || []}
+    breakingNews={(page.props as any).breaking_news || []}
+  >
+    {page}
+  </Layout>
+);
 
 export default Home;

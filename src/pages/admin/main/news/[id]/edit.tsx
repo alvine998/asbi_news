@@ -22,56 +22,72 @@ import {
 } from "@/pages/api/news";
 import { INews } from "@/types/news";
 import { createSlug } from "@/utils";
+import axiosInstance from "@/utils/api";
+import axios from "axios";
 import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
 import moment from "moment";
+import { GetServerSideProps } from "next";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
-const UpdateNews: NextPageWithLayout = () => {
+export const getServerSideProps: GetServerSideProps = async (context: any) => {
+  const { query, params } = context;
+  const { id = params?.id } = query;
+  try {
+    const response = await axiosInstance.get(`/news?id=${id || ""}`);
+
+    const categories: any = await axiosInstance.get("/categories");
+    return {
+      props: {
+        detail: response.data?.items[0], // Pass data as props
+        categories: categories?.data?.items || [],
+      },
+    };
+  } catch (error) {
+    console.error("Server-side Error:", error);
+    return {
+      props: {
+        data: null,
+      },
+    };
+  }
+};
+const UpdateNews: NextPageWithLayout = ({ detail, categories }: any) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [categories, setCategories] = useState<any[]>([]);
   const [editorValue, setEditorValue] = useState("");
-  const [news, setNews] = useState<INews>();
   const router = useRouter();
-  const db = getDatabase();
-  const params = useParams();
-  useEffect(() => {
-    const fetchNews = async () => {
-      setLoading(true);
-      if (!params?.id) {
-        console.error("ID is required to fetch news.");
-        return;
-      }
-      try {
-        const fetchedNews = await getSingleNewsByID(params?.id as string);
-        setNews(fetchedNews);
-        setEditorValue(fetchedNews?.content);
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-        setLoading(false);
-      }
-    };
-    if (params?.id) {
-      fetchNews();
-    }
-  }, [params?.id]);
-
-  const fetchCategories = async () => {
-    const data: any = await getCategories();
-    setCategories(data);
-  };
-  useEffect(() => {
-    fetchCategories();
-  }, [db]);
   const handleUpdate = async (values: Record<string, any>) => {
-    const payload = {
-      ...values,
-    };
-    await updateNews(news?.id as string, payload);
-    router.push("/admin/main/news");
+    try {
+      //edit
+      const response = await axios.post("/api/express/news/update", {
+        ...values,
+        id: detail?.id,
+        slug: createSlug(values?.title || detail?.title),
+        thumbnail: values?.image || detail?.thumbnail
+      });
+      toast.success("Iklan Berhasil Diubah", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      router.push("/admin/main/news");
+    } catch (error) {
+      console.error("Client-side Error:", error);
+      toast.error("Failed to fetch ads. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
   };
 
   const NewsForm: any = [
@@ -81,17 +97,17 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "text",
       placeholder: "Masukkan Judul Berita",
       required: true,
-      defaultValue: news?.title,
+      defaultValue: detail?.title,
     },
     {
       name: "category",
       label: "Kategori Berita",
       type: "select",
-      options: categories.map((category) => ({
+      options: categories.map((category: any) => ({
         label: category.name,
         value: category.id,
       })),
-      defaultValue: news?.category,
+      defaultValue: detail?.category_id,
     },
     {
       name: "author",
@@ -99,7 +115,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "text",
       placeholder: "Masukkan Penulis",
       required: true,
-      defaultValue: news?.author,
+      defaultValue: detail?.author,
     },
     {
       name: "description",
@@ -107,7 +123,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "textarea",
       placeholder: "Masukkan Deskripsi",
       required: true,
-      defaultValue: news?.description,
+      defaultValue: detail?.description,
     },
     {
       name: "thumbnail",
@@ -115,7 +131,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "file",
       required: true,
       accept: "image/*",
-      defaultValue: news?.thumbnail,
+      defaultValue: detail?.thumbnail,
     },
     {
       name: "content",
@@ -123,7 +139,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "texteditor",
       placeholder: "Masukkan Isi Berita",
       required: true,
-      defaultValue: news?.content,
+      defaultValue: detail?.content,
     },
     {
       name: "editor",
@@ -131,7 +147,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "text",
       placeholder: "Masukkan Editor",
       required: true,
-      defaultValue: news?.editor,
+      defaultValue: detail?.editor,
     },
     {
       name: "source",
@@ -139,7 +155,7 @@ const UpdateNews: NextPageWithLayout = () => {
       type: "text",
       placeholder: "Masukkan Sumber",
       required: true,
-      defaultValue: news?.source || "",
+      defaultValue: detail?.source || "",
     },
     {
       name: "headline",
@@ -149,7 +165,17 @@ const UpdateNews: NextPageWithLayout = () => {
         { label: "Ya", value: 1 },
         { label: "Tidak", value: 0 },
       ],
-      defaultValue: news?.headline,
+      defaultValue: detail?.headline,
+    },
+    {
+      name: "breaking_news",
+      label: "Breaking News",
+      type: "select",
+      options: [
+        { label: "Ya", value: 1 },
+        { label: "Tidak", value: 0 },
+      ],
+      defaultValue: detail?.breaking_news,
     },
     {
       name: "status",
@@ -159,19 +185,19 @@ const UpdateNews: NextPageWithLayout = () => {
         { label: "Publish", value: "publish" },
         { label: "Draft", value: "draft" },
       ],
-      defaultValue: news?.status,
+      defaultValue: detail?.status,
     },
     {
-      name: "publishedAt",
+      name: "published_at",
       label: "Tanggal Publikasi",
       type: "datetime-local",
-      defaultValue: moment(news?.publishedAt)?.format("YYYY-MM-DDTHH:mm"),
+      defaultValue: moment(detail?.publishedAt)?.format("YYYY-MM-DDTHH:mm"),
     },
     {
       name: "keywords",
       label: "Kata Kunci",
       type: "keywords",
-      defaultValue: news?.keywords,
+      defaultValue: detail?.keywords,
     },
   ];
 

@@ -8,20 +8,19 @@ import { FacebookIcon, InstagramIcon } from "lucide-react";
 import Link from "next/link";
 import { getNews } from "@/pages/api/news";
 
-export default function Layout({ children }: any) {
-  const [news, setNews] = useState<any>([]);
-  const fetchNews = async () => {
-    try {
-      const news = await getNews("publish", "");
-      setNews(news);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+interface Props {
+  children: React.ReactNode;
+  categories: any;
+  ads: any;
+  breakingNews: any;
+}
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
+export default function Layout({
+  children,
+  categories,
+  ads,
+  breakingNews,
+}: Props) {
   return (
     <div>
       <Head>
@@ -41,16 +40,16 @@ export default function Layout({ children }: any) {
           crossOrigin="anonymous"
         ></Script>
       </Head>
-      <Navbar />
-      {news?.length > 0 ? (
-        <div className="lg:px-28">
+      <Navbar categories={categories} ads={ads} />
+      {breakingNews?.length > 0 ? (
+        <div className="lg:px-20">
           <div className="bg-blue-300 text-gray-800 py-3">
             <div className="overflow-hidden relative">
               <div className="whitespace-nowrap lg:animate-marquee-desktop animate-marquee">
                 <span className="mx-4 text-black font-bold">
                   🚨 Breaking News:
                 </span>
-                {news?.slice(0, 5).map((item: any) => (
+                {breakingNews?.slice(0, 5).map((item: any) => (
                   <span key={item.id} className="mx-4 text-black">
                     {item.title}
                   </span>
