@@ -7,12 +7,14 @@ import { ToastContainer } from "react-toastify";
 import { FacebookIcon, InstagramIcon } from "lucide-react";
 import Link from "next/link";
 import { getNews } from "@/pages/api/news";
+import { useRouter } from "next/router";
 
 interface Props {
   children: React.ReactNode;
   categories: any;
   ads: any;
   breakingNews: any;
+  news?: any;
 }
 
 export default function Layout({
@@ -20,12 +22,62 @@ export default function Layout({
   categories,
   ads,
   breakingNews,
+  news
 }: Props) {
+  const [currentUrl, setCurrentUrl] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // You are on the client-side now
+      setCurrentUrl(`${window.location.origin}${router.asPath}`);
+    }
+  }, [router]);
   return (
     <div>
-      {/* <Head>
+      <Head>
         <title>ASBI News</title>
-        <meta name="description" content="Stay updated with the latest news" />
+         {/* Basic SEO Meta Tags */}
+         <title>{news?.title}</title>
+            <meta name="description" content={news?.description} />
+            <meta name="author" content={news?.author} />
+            <meta name="keywords" content={news?.keywords?.toString()} />
+            <link rel="canonical" href={currentUrl} />
+
+            {/* Open Graph Meta Tags */}
+            <meta property="og:type" content="article" />
+            <meta property="og:title" content={news?.title} />
+            <meta property="og:description" content={news?.description} />
+            <meta property="og:image" content={news?.thumbnail} />
+            <meta property="og:image:type" content="image/jpeg" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
+            <meta property="og:url" content={currentUrl} />
+            <meta property="article:author" content={news?.author} />
+            <meta
+              property="article:published_time"
+              content={news?.published_at}
+            />
+
+            {/* Twitter Card Meta Tags */}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={news?.title} />
+            <meta name="twitter:description" content={news?.description} />
+            <meta name="twitter:image" content={news?.thumbnail} />
+            <meta name="twitter:creator" content={news?.author} />
+            <Script
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
+              crossOrigin="anonymous"
+            ></Script>
+            <ins
+              className="block adsbygoogle"
+              data-ad-client="ca-pub-1465977632288270"
+              data-ad-slot="2260079280"
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            ></ins>
+            <Script>(adsbygoogle = window.adsbygoogle || []).push({});</Script>
         <meta
           name="google-site-verification"
           content="uVxJQ0hfthaSi9m9faH2ieprZZkMiwbiO7OYIKH_ogQ"
@@ -39,7 +91,7 @@ export default function Layout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
           crossOrigin="anonymous"
         ></Script>
-      </Head> */}
+      </Head>
       <Navbar categories={categories} ads={ads} />
       {breakingNews?.length > 0 ? (
         <div className="lg:px-20">

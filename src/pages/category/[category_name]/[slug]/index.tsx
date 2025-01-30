@@ -64,49 +64,6 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
         <Loader />
       ) : (
         <div className="w-full bg-white px-4 shadow rounded h-auto py-4 my-4">
-          <Head>
-            {/* Basic SEO Meta Tags */}
-            <title>{news?.title}</title>
-            <meta name="description" content={news?.description} />
-            <meta name="author" content={news?.author} />
-            <meta name="keywords" content={news?.keywords?.toString()} />
-            <link rel="canonical" href={currentUrl} />
-
-            {/* Open Graph Meta Tags */}
-            <meta property="og:type" content="article" />
-            <meta property="og:title" content={news?.title} />
-            <meta property="og:description" content={news?.description} />
-            <meta property="og:image" content={news?.thumbnail} />
-            <meta property="og:image:type" content="image/jpeg" />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:url" content={currentUrl} />
-            <meta property="article:author" content={news?.author} />
-            <meta
-              property="article:published_time"
-              content={news?.published_at}
-            />
-
-            {/* Twitter Card Meta Tags */}
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content={news?.title} />
-            <meta name="twitter:description" content={news?.description} />
-            <meta name="twitter:image" content={news?.thumbnail} />
-            <meta name="twitter:creator" content={news?.author} />
-            <Script
-              async
-              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1465977632288270"
-              crossOrigin="anonymous"
-            ></Script>
-            <ins
-              className="block adsbygoogle"
-              data-ad-client="ca-pub-1465977632288270"
-              data-ad-slot="2260079280"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
-            ></ins>
-            <Script>(adsbygoogle = window.adsbygoogle || []).push({});</Script>
-          </Head>
           <div className="flex items-center justify-center mb-4">
             <Link
               href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
@@ -301,6 +258,7 @@ DetailNews.getLayout = (page: ReactElement) => (
     categories={(page.props as any).categories || []}
     ads={(page.props as any).ads || []}
     breakingNews={(page.props as any).breaking_news || []}
+    news={(page.props as any).detail_newsnews || null}
   >
     {page}
   </Layout>
