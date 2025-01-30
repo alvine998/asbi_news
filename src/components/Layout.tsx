@@ -36,9 +36,8 @@ export default function Layout({
   return (
     <div>
       <Head>
-        <title>ASBI News</title>
          {/* Basic SEO Meta Tags */}
-         <title>{news?.title}</title>
+         <title>{news?.title || "Asbi News"}</title>
             <meta name="description" content={news?.description} />
             <meta name="author" content={news?.author} />
             <meta name="keywords" content={news?.keywords?.toString()} />
