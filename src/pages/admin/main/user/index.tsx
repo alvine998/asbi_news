@@ -7,16 +7,8 @@ import Input from "@/components/Input";
 import Modal from "@/components/Modal";
 import { useModal } from "@/hooks/useModal";
 import type { NextPageWithLayout } from "@/pages/_app";
-import { createAds, deleteAds, getAds, updateAds } from "@/pages/api/ads";
-import {
-  createCategory,
-  deleteCategory,
-  getCategories,
-  updateCategory,
-} from "@/pages/api/category";
 import axiosInstance from "@/utils/api";
 import axios from "axios";
-import { getDatabase, set } from "firebase/database";
 import { PencilIcon, TrashIcon } from "lucide-react";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
@@ -29,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const { page = 0, size = 10, search = "" } = query;
   try {
     const response = await axiosInstance.get(
-      `/ads?search=${search || ""}&page=${page || 0}&size=${
+      `/users?search=${search || ""}&page=${page || 0}&size=${
         size || 10
       }&pagination=true`
     ); // Fetch data
@@ -49,20 +41,20 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
   }
 };
 
-const Ads: NextPageWithLayout = ({ table, filters }: any) => {
+const User: NextPageWithLayout = ({ table, filters }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [selected, setSelected] = useState<any>("header");//jasdknjasn
+  const [selected, setSelected] = useState<any>("header");
+  // Firebase Database Reference
 
   const handleCreate = async (values: Record<string, any>) => {
     try {
-      const response = await axios.post("/api/express/ads/create", {
+      const response = await axios.post("/api/express/user/create", {
         ...values,
-        width: values?.type == "header" ? 1080 : 300,
-        height: values?.type == "header" ? 300 : 300,
+        status: 1,
       }); // Fetch from your API route
-      toast.success("Iklan Berhasil Ditambahkan", {
+      toast.success("Pengguna Berhasil Ditambahkan", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -74,7 +66,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       closeModal();
     } catch (error) {
       console.error("Client-side Error:", error);
-      toast.error("Failed to fetch ads. Please try again.", {
+      toast.error("Failed to fetch user. Please try again.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -87,11 +79,11 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
 
   const handleUpdate = async (values: Record<string, any>) => {
     try {
-      const response = await axios.post("/api/express/ads/update", {
+      const response = await axios.post("/api/express/user/update", {
         ...values,
         id: data?.id,
       });
-      toast.success("Iklan Berhasil Diubah", {
+      toast.success("Pengguna Berhasil Diubah", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -103,7 +95,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       closeModal();
     } catch (error) {
       console.error("Client-side Error:", error);
-      toast.error("Failed to fetch ads. Please try again.", {
+      toast.error("Failed to fetch user. Please try again.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -117,8 +109,8 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
   const handleDelete = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/express/ads/delete", data); // Fetch from your API route
-      toast.success("Iklan Berhasil Dihapus", {
+      const response = await axios.post("/api/express/user/delete", data); // Fetch from your API route
+      toast.success("Pengguna Berhasil Dihapus", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -130,7 +122,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       closeModal();
     } catch (error) {
       console.error("Client-side Error:", error);
-      toast.error("Failed to fetch ads. Please try again.", {
+      toast.error("Failed to fetch user. Please try again.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -143,28 +135,13 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
 
   const columns = [
     {
-      name: "Nama Iklan",
-      selector: (row: any) => row.title,
+      name: "Nama",
+      selector: (row: any) => row.name,
       sortable: true,
     },
     {
-      name: "Tipe",
-      selector: (row: any) => row.type,
-      sortable: true,
-    },
-    {
-      name: "Banner",
-      selector: (row: any) => (
-        <>
-          {row?.type == "video" ? (
-            <a href={row.image} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-              Lihat Video
-            </a>
-          ) : (
-            <img src={row.image} alt="image" className="w-20 h-20" />
-          )}
-        </>
-      ),
+      name: "Email",
+      selector: (row: any) => row.email,
       sortable: true,
     },
     {
@@ -199,35 +176,22 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
     },
   ];
 
-  const AdsForm: any = [
+  const UserForm: any = [
     {
-      name: "title",
-      label: "Nama Iklan",
+      name: "name",
+      label: "Nama",
       type: "text",
-      placeholder: "Masukkan Nama Iklan",
+      placeholder: "Masukkan Nama",
       required: true,
-      defaultValue: data?.title,
+      defaultValue: data?.name,
     },
     {
-      name: "type",
-      label: "Jenis Iklan",
-      type: "select",
-      options: [
-        { value: "header", label: "Header" },
-        { value: "side", label: "Pamflet" },
-        { value: "video", label: "Video" },
-      ],
+      name: "email",
+      label: "Email",
+      type: "text",
+      placeholder: "Masukkan Email",
       required: true,
-      defaultValue: data?.type,
-      setSelected: setSelected,
-    },
-    {
-      name: "image",
-      label: selected === "video" ? "Video" : "Banner",
-      type: "file",
-      placeholder: "Masukkan Link URL",
-      required: true,
-      defaultValue: data?.image,
+      defaultValue: data?.email,
     },
   ];
 
@@ -235,7 +199,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
     <div>
       <div className="flex px-4 items-center lg:flex-row flex-col justify-between w-full gap-2">
         <Input
-          placeholder="Cari Iklan..."
+          placeholder="Cari Pengguna..."
           type="search"
           onChange={(e) => {
             router.push(`?search=${e.target.value}`);
@@ -249,7 +213,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
             setKey("create");
           }}
         >
-          Tambah Iklan
+          Tambah Pengguna
         </Button>
       </div>
       <Table
@@ -265,10 +229,10 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
         <Modal
           isOpen={isOpen}
           onClose={closeModal}
-          title={`${data?.id ? "Ubah" : "Tambah"} Iklan`}
+          title={`${data?.id ? "Ubah" : "Tambah"} Pengguna`}
         >
           <FormGenerator
-            fields={AdsForm}
+            fields={UserForm}
             onSubmit={data?.id ? handleUpdate : handleCreate}
             selected={selected}
           />
@@ -277,7 +241,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       {isOpen && key === "delete" && (
         <Modal isOpen={isOpen} onClose={closeModal} title={`Hapus Kategori`}>
           <p className="text-center">
-            Apakah anda yakin ingin menghapus iklan ini?
+            Apakah anda yakin ingin menghapus pengguna ini?
           </p>
           <form onSubmit={handleDelete}>
             <div className="flex justify-end gap-2 w-full mt-2">
@@ -290,6 +254,6 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
   );
 };
 
-Ads.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+User.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default Ads;
+export default User;

@@ -80,6 +80,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     }));
   };
 
+  //
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -96,7 +98,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
         [name]: isChecked,
       }));
     } else {
-      if (isSelect) {
+      if (isSelect && name == "type") {
         setSelected(value);
       }
       setFormData((prev) => ({
