@@ -332,7 +332,7 @@ const Home: NextPageWithLayout = ({
                     (shuffleArray(side_ads)?.[0] as { image: string })?.image
                   }
                   alt="side ads"
-                  className="mt-4 rounded w-full h-[300px] object-cover"
+                  className="mt-4 rounded w-full lg:h-[300px] h-[370px] object-cover"
                 />
               </div>
 
