@@ -117,15 +117,17 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     e.preventDefault();
     onSubmit({
       ...formData,
-      image: selected === "video" ? formData?.image : file,
+      image: file,
+      // keywords: JSON.parse(formData.keywords),
     });
   };
 
   // const [file, setFile] = useState<File | null>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) return setLoading(false);
     if (file.size > 3 * 1024 * 1024) {
       toast.error("Silakan Upload file dengan ukuran maksimal 3MB", {
         position: "top-right",
@@ -135,14 +137,15 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
         pauseOnHover: true,
         draggable: true,
       });
+      setLoading(false);
       return;
     }
-    setLoading(true);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const formData = new FormData();
-      formData.append("image", file);
-      const response: any = await axiosInstance.post("/upload/v2", formData, {
+      formData.append(selected === "video" ? "video" : "image", file);
+      let url = selected === "video" ? "/upload/video" : "/upload/v2";
+      const response: any = await axiosInstance.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -222,14 +225,32 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div>
-                {file || field.defaultValue || !loading ? (
-                  <img
-                    src={file || field.defaultValue}
-                    alt="Preview"
-                    className="mt-2 w-auto h-auto"
-                  />
+                {file || field.defaultValue ? (
+                  <>
+                    {loading ? (
+                      <Loader />
+                    ) : (
+                      <>
+                        {selected === "video" ? (
+                          <a
+                            href={file || undefined}
+                            target="_blank"
+                            className="text-blue-500"
+                          >
+                            Selesai Upload Video
+                          </a>
+                        ) : (
+                          <img
+                            src={file || field.defaultValue}
+                            alt="Preview"
+                            className="mt-2 w-auto h-auto"
+                          />
+                        )}
+                      </>
+                    )}
+                  </>
                 ) : (
-                  <Loader />
+                  ""
                 )}
               </div>
             </>

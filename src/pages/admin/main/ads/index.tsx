@@ -158,7 +158,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       name: "Banner",
       selector: (row: any) => (
         <>
-          {row?.image?.includes(".mp4") ? (
+          {row?.type == "video" ? (
             <a href={row.image} target="_blank" rel="noopener noreferrer" className="text-blue-500">
               Lihat Video
             </a>
@@ -226,7 +226,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
     {
       name: "image",
       label: selected === "video" ? "Video" : "Banner",
-      type: selected === "video" ? "text" : "file",
+      type: "file",
       placeholder: "Masukkan Link URL",
       required: true,
       defaultValue: data?.image,

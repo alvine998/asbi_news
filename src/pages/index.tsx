@@ -32,6 +32,7 @@ const Home: NextPageWithLayout = ({
   categories,
   side_ads,
   video_ads,
+  tech_news,
 }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [kurs, setKurs] = useState<any>({});
@@ -164,6 +165,43 @@ const Home: NextPageWithLayout = ({
                 </div>
               </div>
 
+              {tech_news?.length > 0 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {/* News Tech */}
+                  {shuffleArray(tech_news)
+                    ?.slice(0, 2)
+                    ?.map((newsItem: any) => (
+                      <div
+                        key={newsItem?.id}
+                        className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
+                      >
+                        <img
+                          src={newsItem?.thumbnail}
+                          alt={`News ${newsItem?.id}`}
+                          className="w-full lg:w-1/4 h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <h3 className="text-lg font-semibold mb-2">
+                            {newsItem?.title}
+                          </h3>
+                          <p className="text-gray-800 mb-2">
+                            {newsItem?.description?.substring(0, 100)}
+                          </p>
+                          <p className="text-gray-600 mb-4">
+                            {moment()?.format("DD MMMM YYYY HH:mm")}
+                          </p>
+                          <Link
+                            href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                            className="text-blue-600 hover:underline font-medium"
+                          >
+                            Baca Selengkapnya
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+
               <div>
                 <h2 className="text-2xl font-semibold mb-4 underline">
                   Rekomendasi Berita Untukmu
@@ -201,7 +239,7 @@ const Home: NextPageWithLayout = ({
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {recommended_news.map((newsItem: any) => (
+                {recommended_news?.slice(0, 26).map((newsItem: any) => (
                   <div
                     key={newsItem?.id}
                     className="bg-white shadow-md rounded-lg overflow-hidden"
@@ -298,7 +336,7 @@ const Home: NextPageWithLayout = ({
                 />
               </div>
 
-              <div>
+              <div className="w-full mt-4">
                 <video
                   width={500}
                   height={300}
@@ -331,6 +369,8 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       headline_news,
       news_today,
       recommended_news,
+      popular_news,
+      tech_news,
       ads,
       side_ads,
       video_ads,
@@ -344,6 +384,10 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       ),
       axiosInstance.get(`/news?pagination=false&page=0&size=6&status=publish`),
       axiosInstance.get(`/news?pagination=false&status=publish&recommended=1`),
+      axiosInstance.get(`/news?pagination=false&status=publish&popular=1`),
+      axiosInstance.get(
+        `/news?pagination=false&status=publish&category_name=Teknologi`
+      ),
       axiosInstance.get(`/ads?type=header`),
       axiosInstance.get(`/ads?type=side`),
       axiosInstance.get(`/ads?type=video`),
@@ -356,6 +400,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         headline_news: headline_news.data?.items,
         news_today: news_today.data?.items,
         recommended_news: recommended_news.data?.items,
+        popular_news: popular_news.data?.items,
         categories: categories?.data?.items || [],
         ads: ads?.data?.items || [],
         side_ads: side_ads?.data?.items || [],

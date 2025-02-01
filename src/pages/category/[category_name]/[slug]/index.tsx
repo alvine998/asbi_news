@@ -158,8 +158,8 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             </div>
           </div>
           <div
-            className="text-md mt-4 text-justify text-black ql-editor"
-            dangerouslySetInnerHTML={{ __html: news?.content }}
+            className="text-md mt-4 text-justify text-black ql-editor quill-content prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news?.content) as string }}
           ></div>
 
           <hr className="mt-8 border-b-2" />
