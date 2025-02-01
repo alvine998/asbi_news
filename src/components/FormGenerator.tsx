@@ -4,6 +4,7 @@ import KeywordInput from "./KeywordInput";
 import { toast } from "react-toastify";
 import axios from "axios";
 import axiosInstance from "@/utils/api";
+import Loader from "./Loader";
 
 type Field = {
   name: string;
@@ -26,17 +27,24 @@ type Field = {
   accept?: string;
   editorValue?: any;
   setEditorValue?: any;
+  selected?: any;
+  setSelected?: any;
 };
 
 type FormGeneratorProps = {
   fields: Field[];
   onSubmit: (values: Record<string, any>) => void;
+  selected?: any;
 };
 
-const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
+const FormGenerator: React.FC<FormGeneratorProps> = ({
+  fields,
+  onSubmit,
+  selected,
+}) => {
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [base64Image, setBase64Image] = useState<any>(null);
   const [file, setFile] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   const selectedFile = e.target.files?.[0];
@@ -75,7 +83,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
+    setSelected?: any,
+    isSelect?: boolean
   ) => {
     const { name, value, type } = e.target;
 
@@ -86,6 +96,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
         [name]: isChecked,
       }));
     } else {
+      if (isSelect) {
+        setSelected(value);
+      }
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -102,7 +115,10 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({ ...formData, image: file });
+    onSubmit({
+      ...formData,
+      image: selected === "video" ? formData?.image : file,
+    });
   };
 
   // const [file, setFile] = useState<File | null>(null);
@@ -110,8 +126,8 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if(file.size > 3 * 1024 * 1024) {
-       toast.error("Silakan Upload file dengan ukuran maksimal 3MB", {
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("Silakan Upload file dengan ukuran maksimal 3MB", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -119,9 +135,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
         pauseOnHover: true,
         draggable: true,
       });
-      return
+      return;
     }
-
+    setLoading(true);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const formData = new FormData();
@@ -133,9 +149,11 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
       });
 
       setFile(response?.data?.filePath);
+      setLoading(false);
     };
 
     reader.readAsDataURL(file);
+    setLoading(false);
   };
 
   return (
@@ -149,7 +167,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
             <select
               id={field.name}
               name={field.name}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, field.setSelected, true)}
               defaultValue={field.defaultValue}
               required={field.required}
               className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -204,12 +222,14 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({ fields, onSubmit }) => {
                 className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <div>
-                {(file || field.defaultValue) && (
+                {file || field.defaultValue || !loading ? (
                   <img
                     src={file || field.defaultValue}
                     alt="Preview"
                     className="mt-2 w-auto h-auto"
                   />
+                ) : (
+                  <Loader />
                 )}
               </div>
             </>

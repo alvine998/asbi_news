@@ -30,6 +30,8 @@ const Home: NextPageWithLayout = ({
   recommended_news,
   popular_news,
   categories,
+  side_ads,
+  video_ads,
 }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [kurs, setKurs] = useState<any>({});
@@ -76,7 +78,7 @@ const Home: NextPageWithLayout = ({
     { code: "KRW", locale: "ko-KR", currency: "KRW" },
     { code: "CNY", locale: "zh-CN", currency: "CNY" },
   ];
-  
+
   const finalheadlines = headline_news?.map((item: INews) => ({
     id: item?.id,
     title: item?.title,
@@ -286,8 +288,32 @@ const Home: NextPageWithLayout = ({
                 </p>
               </div>
 
-              <div className="mt-4 w-full lg:h-[500px] h-[300px] py-2 px-4 bg-blue-200 shadow rounded flex justify-center items-center">
-                <p>Add Here 500 x 300 px</p>
+              <div>
+                <img
+                  src={
+                    (shuffleArray(side_ads)?.[0] as { image: string })?.image
+                  }
+                  alt="side ads"
+                  className="mt-4 rounded w-full h-[300px] object-cover"
+                />
+              </div>
+
+              <div>
+                <video
+                  width={500}
+                  height={300}
+                  muted
+                  loop
+                  autoPlay
+                  className="mt-4 rounded"
+                >
+                  <source
+                    src={
+                      (shuffleArray(video_ads)?.[0] as { image: string })?.image
+                    }
+                    type="video/mp4"
+                  />
+                </video>
               </div>
             </section>
           </div>
@@ -306,6 +332,8 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       news_today,
       recommended_news,
       ads,
+      side_ads,
+      video_ads,
       categories,
     ] = await Promise.all([
       axiosInstance.get(
@@ -317,6 +345,8 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       axiosInstance.get(`/news?pagination=false&page=0&size=6&status=publish`),
       axiosInstance.get(`/news?pagination=false&status=publish&recommended=1`),
       axiosInstance.get(`/ads?type=header`),
+      axiosInstance.get(`/ads?type=side`),
+      axiosInstance.get(`/ads?type=video`),
       axiosInstance.get("/categories"),
     ]);
 
@@ -328,6 +358,8 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         recommended_news: recommended_news.data?.items,
         categories: categories?.data?.items || [],
         ads: ads?.data?.items || [],
+        side_ads: side_ads?.data?.items || [],
+        video_ads: video_ads?.data?.items || [],
       },
     };
   } catch (error) {

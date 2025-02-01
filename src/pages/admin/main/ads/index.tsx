@@ -53,14 +53,16 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
+  const [selected, setSelected] = useState<any>("header");
   // Firebase Database Reference
 
   const handleCreate = async (values: Record<string, any>) => {
     try {
+      console.log(values, "lalal");
       const response = await axios.post("/api/express/ads/create", {
         ...values,
         width: values?.type == "header" ? 1080 : 300,
-        height: values?.type == "header" ? 300 : 600,
+        height: values?.type == "header" ? 300 : 300,
       }); // Fetch from your API route
       toast.success("Iklan Berhasil Ditambahkan", {
         position: "top-right",
@@ -148,9 +150,22 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       sortable: true,
     },
     {
+      name: "Tipe",
+      selector: (row: any) => row.type,
+      sortable: true,
+    },
+    {
       name: "Banner",
       selector: (row: any) => (
-        <img src={row.image} alt="image" className="w-20 h-20" />
+        <>
+          {row?.image?.includes(".mp4") ? (
+            <a href={row.image} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+              Lihat Video
+            </a>
+          ) : (
+            <img src={row.image} alt="image" className="w-20 h-20" />
+          )}
+        </>
       ),
       sortable: true,
     },
@@ -196,23 +211,25 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       defaultValue: data?.title,
     },
     {
-      name: "image",
-      label: "Banner",
-      type: "file",
-      placeholder: "Masukkan Banner",
-      required: true,
-      defaultValue: data?.image,
-    },
-    {
       name: "type",
       label: "Jenis Iklan",
       type: "select",
       options: [
         { value: "header", label: "Header" },
         { value: "side", label: "Pamflet" },
+        { value: "video", label: "Video" },
       ],
       required: true,
       defaultValue: data?.type,
+      setSelected: setSelected,
+    },
+    {
+      name: "image",
+      label: selected === "video" ? "Video" : "Banner",
+      type: selected === "video" ? "text" : "file",
+      placeholder: "Masukkan Link URL",
+      required: true,
+      defaultValue: data?.image,
     },
   ];
 
@@ -255,6 +272,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
           <FormGenerator
             fields={AdsForm}
             onSubmit={data?.id ? handleUpdate : handleCreate}
+            selected={selected}
           />
         </Modal>
       )}
