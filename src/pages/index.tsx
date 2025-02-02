@@ -165,42 +165,47 @@ const Home: NextPageWithLayout = ({
                 </div>
               </div>
 
-              {tech_news?.length > 0 && (
-                <div className="grid grid-cols-2 gap-2">
-                  {/* News Tech */}
-                  {shuffleArray(tech_news)
-                    ?.slice(0, 2)
-                    ?.map((newsItem: any) => (
-                      <div
-                        key={newsItem?.id}
-                        className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
-                      >
-                        <img
-                          src={newsItem?.thumbnail}
-                          alt={`News ${newsItem?.id}`}
-                          className="w-full lg:w-1/4 h-48 object-cover"
-                        />
-                        <div className="p-4">
-                          <h3 className="text-lg font-semibold mb-2">
-                            {newsItem?.title}
-                          </h3>
-                          <p className="text-gray-800 mb-2">
-                            {newsItem?.description?.substring(0, 100)}
-                          </p>
-                          <p className="text-gray-600 mb-4">
-                            {moment()?.format("DD MMMM YYYY HH:mm")}
-                          </p>
-                          <Link
-                            href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                            className="text-blue-600 hover:underline font-medium"
-                          >
-                            Baca Selengkapnya
-                          </Link>
+              <div>
+                <h2 className="text-2xl font-semibold mb-4 underline">
+                  Teknologi
+                </h2>
+                {tech_news?.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {/* News Tech */}
+                    {shuffleArray(tech_news)
+                      ?.slice(0, 2)
+                      ?.map((newsItem: any) => (
+                        <div
+                          key={newsItem?.id}
+                          className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
+                        >
+                          <img
+                            src={newsItem?.thumbnail}
+                            alt={`News ${newsItem?.id}`}
+                            className="w-full lg:w-1/3 md:h-auto h-48 object-cover"
+                          />
+                          <div className="md:p-2 p-4">
+                            <h3 className="text-lg font-semibold">
+                              {newsItem?.title}
+                            </h3>
+                            <p className="text-gray-800">
+                              {newsItem?.description?.substring(0, 100)}
+                            </p>
+                            <p className="text-gray-600">
+                              {moment()?.format("DD MMMM YYYY HH:mm")}
+                            </p>
+                            <Link
+                              href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                              className="text-blue-600 hover:underline font-medium"
+                            >
+                              Baca Selengkapnya
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                </div>
-              )}
+                      ))}
+                  </div>
+                )}
+              </div>
 
               <div>
                 <h2 className="text-2xl font-semibold mb-4 underline">
@@ -332,11 +337,11 @@ const Home: NextPageWithLayout = ({
                     (shuffleArray(side_ads)?.[0] as { image: string })?.image
                   }
                   alt="side ads"
-                  className="mt-4 rounded w-full lg:h-[300px] h-[370px] object-cover"
+                  className="mt-10 rounded w-full lg:h-auto h-auto object-cover"
                 />
               </div>
 
-              <div className="w-full mt-4">
+              <div className="w-full mt-10">
                 <video
                   width={500}
                   height={300}
@@ -382,9 +387,9 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       axiosInstance.get(
         `/news?pagination=true&size=5&status=publish&headline=1`
       ),
-      axiosInstance.get(`/news?pagination=false&page=0&size=6&status=publish`),
+      axiosInstance.get(`/news?pagination=true&page=0&size=3&status=publish`),
       axiosInstance.get(`/news?pagination=false&status=publish&recommended=1`),
-      axiosInstance.get(`/news?pagination=false&status=publish&popular=1`),
+      axiosInstance.get(`/news?pagination=true&page=0&size=6&status=publish&popular=1`),
       axiosInstance.get(
         `/news?pagination=false&status=publish&category_name=Teknologi`
       ),
@@ -405,6 +410,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         ads: ads?.data?.items || [],
         side_ads: side_ads?.data?.items || [],
         video_ads: video_ads?.data?.items || [],
+        tech_news: tech_news.data?.items,
       },
     };
   } catch (error) {

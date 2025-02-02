@@ -50,7 +50,7 @@ const CreateNews: NextPageWithLayout = ({ categories }: any) => {
   const router = useRouter();
   const handleCreate = async (values: Record<string, any>) => {
     try {
-      // 
+      //  
       const response = await axios.post("/api/express/news/create", {
         ...values,
         slug: createSlug(values.title),
