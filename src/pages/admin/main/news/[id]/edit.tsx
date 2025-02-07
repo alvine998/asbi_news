@@ -68,6 +68,12 @@ const UpdateNews: NextPageWithLayout = ({ detail, categories }: any) => {
         slug: createSlug(values?.title || detail?.title),
         thumbnail: values?.image || detail?.thumbnail
       });
+      console.log({
+        ...values,
+        id: detail?.id,
+        slug: createSlug(values?.title || detail?.title),
+        thumbnail: values?.image || detail?.thumbnail,
+      });
       toast.success("Iklan Berhasil Diubah", {
         position: "top-right",
         autoClose: 5000,
@@ -76,7 +82,7 @@ const UpdateNews: NextPageWithLayout = ({ detail, categories }: any) => {
         pauseOnHover: true,
         draggable: true,
       });
-      router.push("/admin/main/news");
+      // router.push("/admin/main/news");
     } catch (error) {
       console.error("Client-side Error:", error);
       toast.error("Failed to fetch ads. Please try again.", {
@@ -191,7 +197,7 @@ const UpdateNews: NextPageWithLayout = ({ detail, categories }: any) => {
       name: "published_at",
       label: "Tanggal Publikasi",
       type: "datetime-local",
-      defaultValue: moment(detail?.published_at)?.format("YYYY-MM-DDTHH:mm"),
+      defaultValue: moment(detail?.published_at)?.subtract(7, 'hours')?.format("YYYY-MM-DDTHH:mm"),
     },
     {
       name: "keywords",

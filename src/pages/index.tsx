@@ -18,6 +18,7 @@ import { filterAndCombine, formatCurrency, shuffleArray } from "@/utils";
 import axios from "axios";
 import { GetServerSideProps } from "next";
 import axiosInstance from "@/utils/api";
+import { useRouter } from "next/router";
 
 interface Props {
   categories: any;
@@ -29,7 +30,7 @@ const Home: NextPageWithLayout = ({
   news_today,
   recommended_news,
   popular_news,
-  categories,
+  kurs_dollar,
   side_ads,
   video_ads,
   tech_news,
@@ -45,29 +46,32 @@ const Home: NextPageWithLayout = ({
   }, []);
 
   const getKurs = async () => {
+    console.log(kurs_dollar);
     try {
+      if (kurs_dollar.length > 0) {
+        return setKurs(kurs_dollar[0]);
+      }
       const result = await axios.get(
         `https://api.frankfurter.dev/v1/latest?base=USD`
       );
+      const postKurs = await axiosInstance.post("/kurs", {
+        date: moment().format("YYYY-MM-DD"),
+        idr: result.data.rates.IDR,
+        eur: result.data.rates.EUR,
+        myr: result.data.rates.MYR,
+        aud: result.data.rates.AUD,
+        jpy: result.data.rates.JPY,
+        krw: result.data.rates.KRW,
+        cny: result.data.rates.CNY,
+      });
       setKurs(result.data.rates);
-      localStorage.setItem(
-        "kurs",
-        JSON.stringify(moment().format("YYYY-MM-DD"))
-      );
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    const existKurs: any = localStorage.getItem("kurs");
-    // Run the task immediately and schedule the next one
-    if (!existKurs) {
-      getKurs();
-    }
-    if (moment().format("YYYY-MM-DD") !== JSON.parse(existKurs)) {
-      getKurs();
-    }
+    getKurs();
   }, []);
 
   const currencySettings = [
@@ -177,26 +181,26 @@ const Home: NextPageWithLayout = ({
                       ?.map((newsItem: any) => (
                         <div
                           key={newsItem?.id}
-                          className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
+                          className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
                         >
                           <img
                             src={newsItem?.thumbnail}
                             alt={`News ${newsItem?.id}`}
-                            className="w-full lg:w-1/3 md:h-auto h-48 object-cover"
+                            className="w-1/2 lg:w-1/3 md:h-auto h-48 object-cover"
                           />
                           <div className="md:p-2 p-4">
-                            <h3 className="text-lg font-semibold">
-                              {newsItem?.title}
+                            <h3 className="lg:text-lg text-xs font-semibold">
+                              {newsItem?.title?.substring(0, 50)}...
                             </h3>
-                            <p className="text-gray-800">
+                            <p className="text-gray-800 lg:text-md text-xs">
                               {newsItem?.description?.substring(0, 100)}
                             </p>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 lg:text-md text-xs">
                               {moment()?.format("DD MMMM YYYY HH:mm")}
                             </p>
                             <Link
                               href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                              className="text-blue-600 hover:underline font-medium"
+                              className="text-blue-600 hover:underline font-medium lg:text-md text-xs"
                             >
                               Baca Selengkapnya
                             </Link>
@@ -244,7 +248,7 @@ const Home: NextPageWithLayout = ({
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {recommended_news?.slice(0, 26).map((newsItem: any) => (
+                {recommended_news?.slice(0, 8).map((newsItem: any) => (
                   <div
                     key={newsItem?.id}
                     className="bg-white shadow-md rounded-lg overflow-hidden"
@@ -321,7 +325,7 @@ const Home: NextPageWithLayout = ({
                         {code}
                       </p>
                       <p className="text-black border border-black p-1 w-full">
-                        {formatCurrency(kurs[code], locale, currency)}
+                        {formatCurrency(kurs[code?.toLowerCase()], locale, currency)}
                       </p>
                     </div>
                   ))}
@@ -380,6 +384,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       side_ads,
       video_ads,
       categories,
+      kurs_dollar,
     ] = await Promise.all([
       axiosInstance.get(
         `/news?pagination=false&status=publish&breaking_news=1`
@@ -389,7 +394,9 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       ),
       axiosInstance.get(`/news?pagination=true&page=0&size=3&status=publish`),
       axiosInstance.get(`/news?pagination=false&status=publish&recommended=1`),
-      axiosInstance.get(`/news?pagination=true&page=0&size=6&status=publish&popular=1`),
+      axiosInstance.get(
+        `/news?pagination=true&page=0&size=6&status=publish&popular=1`
+      ),
       axiosInstance.get(
         `/news?pagination=false&status=publish&category_name=Teknologi`
       ),
@@ -397,6 +404,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       axiosInstance.get(`/ads?type=side`),
       axiosInstance.get(`/ads?type=video`),
       axiosInstance.get("/categories"),
+      axiosInstance.get(`/kurs?date=${moment().format("YYYY-MM-DD")}`),
     ]);
 
     return {
@@ -411,6 +419,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         side_ads: side_ads?.data?.items || [],
         video_ads: video_ads?.data?.items || [],
         tech_news: tech_news.data?.items,
+        kurs_dollar: kurs_dollar.data?.items || [],
       },
     };
   } catch (error) {

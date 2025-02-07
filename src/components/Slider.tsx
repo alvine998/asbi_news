@@ -35,8 +35,8 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
                 className="w-full lg:h-[500px] h-[200px] object-cover"
               />
               <h1 className="text-white text-center lg:-mt-20 -mt-10 lg:text-2xl text-xs bg-gray-500 py-2 px-2 absolute rounded">
-                {banner?.title?.substring(0, 100)}{" "}
-                {banner?.title?.length > 100 ? "..." : ""}
+                {banner?.title?.substring(0, 50)}{" "}
+                {banner?.title?.length > 50 ? "..." : ""}
               </h1>
             </Link>
           ))}

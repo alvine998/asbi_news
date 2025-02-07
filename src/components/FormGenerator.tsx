@@ -206,9 +206,9 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
             <>
               <KeywordInput
                 value={field.defaultValue || formData[field.name] || []}
-                onChange={(keywords) =>
-                  handleKeywordsChange(field.name, keywords)
-                }
+                onChange={(keywords) => {
+                  handleKeywordsChange(field.name, keywords);
+                }}
               />
               <input
                 type="hidden"

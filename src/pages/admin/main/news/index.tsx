@@ -256,6 +256,13 @@ const News: NextPageWithLayout = ({ table, filters, categories }: any) => {
     },
   ];
 
+  const [filter, setFilter] = useState<any>(router.query);
+
+  useEffect(() => {
+    const queryFilter = new URLSearchParams(filter).toString();
+    router.push(`?${queryFilter}`);
+  }, [filter]);
+
   return (
     <div>
       <div className="flex px-4 items-center lg:flex-row flex-col justify-between w-full gap-2">
@@ -278,8 +285,8 @@ const News: NextPageWithLayout = ({ table, filters, categories }: any) => {
       <Table
         columns={columns}
         data={table?.items}
-        handlePageChange={() => {}}
-        handleRowsPerPageChange={() => {}}
+        filter={filter}
+        setFilter={setFilter}
         itemsPerPage={table?.size || 10}
         dataLength={table?.total_items}
       />

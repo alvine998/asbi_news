@@ -6,8 +6,8 @@ interface Props {
   data: any[];
   dataLength: number;
   itemsPerPage?: number;
-  handlePageChange?: (page: number) => void;
-  handleRowsPerPageChange?: (rowsPerPage: number) => void;
+  setFilter?: any;
+  filter?: any;
   loading?: boolean;
 }
 
@@ -44,7 +44,15 @@ const customStyles: any = {
   },
 };
 
-const Table = ({ columns, data, handlePageChange, handleRowsPerPageChange, itemsPerPage, dataLength, loading }: Props) => {
+const Table = ({
+  columns,
+  data,
+  setFilter,
+  filter,
+  itemsPerPage,
+  dataLength,
+  loading,
+}: Props) => {
   const [show, setShow] = useState<boolean>(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -64,13 +72,18 @@ const Table = ({ columns, data, handlePageChange, handleRowsPerPageChange, items
           paginationTotalRows={dataLength}
           paginationPerPage={itemsPerPage}
           paginationRowsPerPageOptions={[10, 20, 50]}
-          onChangePage={handlePageChange}
-          onChangeRowsPerPage={handleRowsPerPageChange}
+          onChangePage={(pageData) => {
+            setFilter({ ...filter, page: (pageData as number- 1) });
+          }}
+          onChangeRowsPerPage={(currentRow, currentPage) => {
+            setFilter({ ...filter, page: (currentPage as number - 1), size: currentRow });
+          }}
           progressPending={loading}
           highlightOnHover
           pointerOnHover
           responsive
           striped
+          
         />
       )}
     </div>

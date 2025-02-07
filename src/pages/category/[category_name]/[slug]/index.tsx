@@ -150,7 +150,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           <div className="flex lg:gap-4 gap-2 lg:flex-row flex-col">
             <p className="text-gray-600">
               {news?.author},{" "}
-              {moment(news?.published_at).format("DD MMMM YYYY HH:mm")}
+              {moment(news?.published_at).subtract(7, "hours").format("DD MMMM YYYY HH:mm")}
             </p>
             <div className="flex gap-2 flex-row items-center">
               <EyeIcon className="w-4 h-4 text-gray-600" />
@@ -226,13 +226,16 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const { query, params } = context;
   try {
-    const [detail_news, other_news, ads, categories] = await Promise.all([
+    const [detail_news, other_news, ads, categories, breaking_news] = await Promise.all([
       axiosInstance.get(
         `/news?pagination=true&size=1&status=publish&slug=${query?.slug}`
       ),
       axiosInstance.get(`/news?pagination=true&size=20&status=publish`),
       axiosInstance.get(`/ads?type=header`),
       axiosInstance.get("/categories"),
+      axiosInstance.get(
+        `/news?pagination=false&status=publish&breaking_news=1`
+      ),
     ]);
 
     return {
@@ -241,6 +244,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         detail_news: detail_news.data?.items?.[0],
         categories: categories?.data?.items || [],
         ads: ads?.data?.items || [],
+        breaking_news: breaking_news.data?.items,
       },
     };
   } catch (error) {

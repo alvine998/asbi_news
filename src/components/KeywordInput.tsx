@@ -7,17 +7,19 @@ interface KeywordInputProps {
 
 const KeywordInput: React.FC<KeywordInputProps> = ({ value, onChange }) => {
   const [input, setInput] = useState<string>("");
-
+  const [defaultValue, setDefaultValue] = useState<string[]>(value);
   const handleAddKeyword = () => {
-    if (input && !value.includes(input)) {
-      const updatedKeywords = [...value, input];
+    if (input && !defaultValue.includes(input)) {
+      const updatedKeywords = [...defaultValue, input];
+      setDefaultValue(updatedKeywords);
       onChange(updatedKeywords); // Update the keywords in the parent
       setInput(""); // Clear the input field
     }
   };
 
   const handleRemoveKeyword = (keyword: string) => {
-    const updatedKeywords = value.filter((k) => k !== keyword);
+    const updatedKeywords = defaultValue.filter((k) => k !== keyword);
+    setDefaultValue(updatedKeywords);
     onChange(updatedKeywords); // Update the keywords in the parent
   };
 
@@ -40,7 +42,7 @@ const KeywordInput: React.FC<KeywordInputProps> = ({ value, onChange }) => {
         </button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {value?.map((keyword, index) => (
+        {defaultValue?.map((keyword, index) => (
           <div
             key={index}
             className="bg-gray-200 text-gray-700 px-3 py-1 rounded flex items-center"

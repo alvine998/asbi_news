@@ -47,7 +47,12 @@ const User: NextPageWithLayout = ({ table, filters }: any) => {
   const router = useRouter();
   const [selected, setSelected] = useState<any>("header");
   // Firebase Database Reference
+  const [filter, setFilter] = useState<any>(router.query);
 
+  useEffect(() => {
+    const queryFilter = new URLSearchParams(filter).toString();
+    router.push(`?${queryFilter}`);
+  }, [filter]);
   const handleCreate = async (values: Record<string, any>) => {
     try {
       const response = await axios.post("/api/express/user/create", {
@@ -219,8 +224,8 @@ const User: NextPageWithLayout = ({ table, filters }: any) => {
       <Table
         columns={columns}
         data={table?.items}
-        handlePageChange={() => {}}
-        handleRowsPerPageChange={() => {}}
+        filter={filter}
+        setFilter={setFilter}
         itemsPerPage={table?.size || 10}
         dataLength={table?.total_items}
       />

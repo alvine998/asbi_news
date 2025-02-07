@@ -53,7 +53,13 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
   const { isOpen, closeModal, openModal, setData, data, setKey, key } =
     useModal();
   const router = useRouter();
-  const [selected, setSelected] = useState<any>("header");//jasdknjasn
+  const [selected, setSelected] = useState<any>("header"); //jasdknjasn
+  const [filter, setFilter] = useState<any>(router.query);
+
+  useEffect(() => {
+    const queryFilter = new URLSearchParams(filter).toString();
+    router.push(`?${queryFilter}`);
+  }, [filter]);
 
   const handleCreate = async (values: Record<string, any>) => {
     try {
@@ -157,7 +163,12 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       selector: (row: any) => (
         <>
           {row?.type == "video" ? (
-            <a href={row.image} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+            <a
+              href={row.image}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500"
+            >
               Lihat Video
             </a>
           ) : (
@@ -255,8 +266,8 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
       <Table
         columns={columns}
         data={table?.items}
-        handlePageChange={() => {}}
-        handleRowsPerPageChange={() => {}}
+        filter={filter}
+        setFilter={setFilter}
         itemsPerPage={table?.size || 10}
         dataLength={table?.total_items}
       />
