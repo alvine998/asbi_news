@@ -248,7 +248,7 @@ const Home: NextPageWithLayout = ({
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {recommended_news?.slice(0, 8).map((newsItem: any) => (
+                {recommended_news?.slice(0, 9).map((newsItem: any) => (
                   <div
                     key={newsItem?.id}
                     className="bg-white shadow-md rounded-lg overflow-hidden"
