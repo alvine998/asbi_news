@@ -192,11 +192,8 @@ const Home: NextPageWithLayout = ({
                             <h3 className="lg:text-lg text-xs font-semibold">
                               {newsItem?.title?.substring(0, 50)}...
                             </h3>
-                            <p className="text-gray-800 lg:text-md text-xs">
-                              {newsItem?.description?.substring(0, 100)}
-                            </p>
                             <p className="text-gray-600 lg:text-md text-xs">
-                              {moment()?.format("DD MMMM YYYY HH:mm")}
+                              {moment(newsItem?.published_at)?.format("DD MMMM YYYY HH:mm")}
                             </p>
                             <Link
                               href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
