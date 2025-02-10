@@ -191,7 +191,7 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
                         {newsItem?.description?.slice(0, 100)}
                       </p>
                       <p className="text-gray-800 font-bold lg:text-md text-xs">
-                        {moment(newsItem?.published_at)?.format(
+                        {moment(newsItem?.published_at)?.subtract(7, "hours")?.format(
                           "DD MMMM YYYY HH:mm"
                         )}
                       </p>

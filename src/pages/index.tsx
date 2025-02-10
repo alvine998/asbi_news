@@ -155,7 +155,7 @@ const Home: NextPageWithLayout = ({
                           {newsItem?.description?.substring(0, 100)}...
                         </p>
                         <p className="text-black mb-2 font-bold text-xs">
-                          {moment(newsItem?.createdAt).format("DD MMMM YYYY")}
+                          {moment(newsItem?.createdAt)?.subtract(7, "hours").format("DD MMMM YYYY")}
                         </p>
                         <Link
                           href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
@@ -193,7 +193,7 @@ const Home: NextPageWithLayout = ({
                               {newsItem?.title?.substring(0, 50)}...
                             </h3>
                             <p className="text-gray-600 lg:text-md text-xs">
-                              {moment(newsItem?.published_at)?.format("DD MMMM YYYY HH:mm")}
+                              {moment(newsItem?.published_at)?.subtract(7, "hours")?.format("DD MMMM YYYY HH:mm")}
                             </p>
                             <Link
                               href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
@@ -298,7 +298,7 @@ const Home: NextPageWithLayout = ({
                           {newsItem?.description?.slice(0, 100)}
                         </p>
                         <p className="text-gray-800 font-bold lg:text-md text-xs">
-                          {moment(newsItem?.published_at)?.format(
+                          {moment(newsItem?.published_at)?.subtract(7, "hours")?.format(
                             "DD MMMM YYYY HH:mm"
                           )}
                         </p>

@@ -223,7 +223,7 @@ const News: NextPageWithLayout = ({ table, filters, categories }: any) => {
     {
       name: "Tanggal Publish",
       selector: (row: INews) =>
-        moment(row?.published_at)?.format("DD-MM-YYYY HH:mm"),
+        moment(row?.published_at)?.subtract(7, "hours")?.format("DD-MM-YYYY HH:mm"),
       sortable: true,
     },
     {
