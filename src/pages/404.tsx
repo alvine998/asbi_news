@@ -9,12 +9,12 @@ export default function Custom404() {
         <p className="text-lg text-gray-600 mb-8">
           Oops! The page you are looking for doesn’t exist.
         </p>
-        <Link
+        <a
           href="/"
           className="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition duration-200"
         >
           Go Back Home
-        </Link>
+        </a>
       </div>
     </div>
   );
