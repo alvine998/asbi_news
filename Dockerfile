@@ -4,14 +4,16 @@ FROM node:18-alpine
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first
-COPY package.json package-lock.json ./
+# Copy built files from the builder stage
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public public
+COPY --from=builder /app/package.json package.json
 
 # Copy environment variables
 COPY .env.local .env.local
 
 # Install dependencies
-RUN npm install --production
+RUN npm ci --only=production
 
 # Copy the rest of the app
 COPY . .
