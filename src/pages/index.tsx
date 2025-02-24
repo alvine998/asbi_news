@@ -34,7 +34,10 @@ const Home: NextPageWithLayout = ({
   side_ads,
   video_ads,
   tech_news,
-  news_today_mobile
+  news_today_mobile,
+  pesona_nusantara_news,
+  international_news,
+  unpopular_news,
 }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [kurs, setKurs] = useState<any>({});
@@ -47,7 +50,6 @@ const Home: NextPageWithLayout = ({
   }, []);
 
   const getKurs = async () => {
-    console.log(kurs_dollar);
     try {
       if (kurs_dollar.length > 0) {
         return setKurs(kurs_dollar[0]);
@@ -84,6 +86,11 @@ const Home: NextPageWithLayout = ({
     { code: "KRW", locale: "ko-KR", currency: "KRW" },
     { code: "CNY", locale: "zh-CN", currency: "CNY" },
   ];
+
+  const pesonaNews: INews[] = shuffleArray(pesona_nusantara_news) as INews[];
+  const internationalNews: INews[] = shuffleArray(
+    international_news
+  ) as INews[];
 
   const finalheadlines = headline_news?.map((item: INews) => ({
     id: item?.id,
@@ -236,6 +243,7 @@ const Home: NextPageWithLayout = ({
                 )}
               </div>
 
+              {/* Rekomendasi Berita */}
               <div>
                 <h2 className="text-2xl font-semibold mb-4 underline">
                   Rekomendasi Berita Untukmu
@@ -272,6 +280,59 @@ const Home: NextPageWithLayout = ({
                 </div>
               </div>
 
+              {/* Pesona Nusantara */}
+              <div>
+                {/* Desktop */}
+                <Link
+                  href={`/category/${pesonaNews?.[0]?.category_name}/${pesonaNews?.[0]?.slug}`}
+                  className="p-1 bg-gray-300 rounded w-full lg:flex flex-row gap-2 justify-between lg:items-start items-center hidden"
+                >
+                  <div className="lg:p-2 p-1 w-full">
+                    <p className="lg:text-md text-xs">
+                      Pesona Nusantara |{" "}
+                      {moment(pesonaNews?.[0]?.published_at).format(
+                        "dddd, DD MMMM YYYY HH:mm"
+                      )}
+                    </p>
+                    <p className="lg:text-xl text-sm font-bold mt-2">
+                      {pesonaNews?.[0]?.title}
+                    </p>
+                    <p className="lg:text-md">
+                      {pesonaNews?.[0]?.description?.substring(0, 200)}...
+                    </p>
+                  </div>
+                  <div className="lg:w-1/2 w-full">
+                    <img
+                      src={pesonaNews?.[0]?.thumbnail}
+                      alt="pesona"
+                      className="lg:w-auto w-full h-full"
+                    />
+                  </div>
+                </Link>
+
+                {/* Mobile */}
+                <Link
+                  href={`/category/${pesonaNews?.[0]?.category_name}/${pesonaNews?.[0]?.slug}`}
+                  className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
+                >
+                  <div className="md:p-2 p-2">
+                    <h3 className="lg:text-lg text-xs font-semibold">
+                      {pesonaNews?.[0]?.title?.substring(0, 50)}...
+                    </h3>
+                    <p className="text-gray-600 lg:text-md text-xs">
+                      {moment(pesonaNews?.[0]?.published_at)
+                        ?.subtract(7, "hours")
+                        ?.format("DD MMMM YYYY HH:mm")}
+                    </p>
+                  </div>
+                  <img
+                    src={pesonaNews?.[0]?.thumbnail}
+                    alt={`News ${pesonaNews?.[0]?.id}`}
+                    className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                  />
+                </Link>
+              </div>
+
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {recommended_news?.slice(0, 9).map((newsItem: any) => (
                   <div
@@ -299,6 +360,101 @@ const Home: NextPageWithLayout = ({
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Internasional */}
+              <div>
+                {/* Desktop */}
+                <Link
+                  href={`/category/${internationalNews?.[0]?.category_name}/${internationalNews?.[0]?.slug}`}
+                  className="p-1 bg-gray-300 rounded w-full lg:flex flex-row gap-2 justify-between lg:items-start items-center hidden"
+                >
+                  <div className="lg:p-2 p-1 w-full">
+                    <p className="lg:text-md text-xs">
+                      Internasional |{" "}
+                      {moment(internationalNews?.[0]?.published_at).format(
+                        "dddd, DD MMMM YYYY HH:mm"
+                      )}
+                    </p>
+                    <p className="lg:text-xl text-sm font-bold mt-2">
+                      {internationalNews?.[0]?.title}
+                    </p>
+                    <p className="lg:text-md">
+                      {internationalNews?.[0]?.description?.substring(0, 200)}
+                      ...
+                    </p>
+                  </div>
+                  <div className="lg:w-1/2 w-full">
+                    <img
+                      src={internationalNews?.[0]?.thumbnail}
+                      alt="pesona"
+                      className="lg:w-auto w-full h-full"
+                    />
+                  </div>
+                </Link>
+
+                {/* Mobile */}
+                <Link
+                  href={`/category/${internationalNews?.[0]?.category_name}/${internationalNews?.[0]?.slug}`}
+                  className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
+                >
+                  <div className="md:p-2 p-2">
+                    <h3 className="lg:text-lg text-xs font-semibold">
+                      {internationalNews?.[0]?.title?.substring(0, 50)}...
+                    </h3>
+                    <p className="text-gray-600 lg:text-md text-xs">
+                      {moment(internationalNews?.[0]?.published_at)
+                        ?.subtract(7, "hours")
+                        ?.format("DD MMMM YYYY HH:mm")}
+                    </p>
+                  </div>
+                  <img
+                    src={internationalNews?.[0]?.thumbnail}
+                    alt={`News ${internationalNews?.[0]?.id}`}
+                    className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                  />
+                </Link>
+              </div>
+
+              {/* Baca Juga */}
+              <div>
+                <h2 className="text-2xl font-semibold mb-4 underline">
+                  Baca Juga
+                </h2>
+                {unpopular_news?.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {shuffleArray(unpopular_news)
+                      ?.slice(0, 2)
+                      ?.map((newsItem: any) => (
+                        <div
+                          key={newsItem?.id}
+                          className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
+                        >
+                          <img
+                            src={newsItem?.thumbnail}
+                            alt={`News ${newsItem?.id}`}
+                            className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                          />
+                          <div className="md:p-2 p-2">
+                            <h3 className="lg:text-lg text-xs font-semibold">
+                              {newsItem?.title?.substring(0, 50)}...
+                            </h3>
+                            <p className="text-gray-600 lg:text-md text-xs">
+                              {moment(newsItem?.published_at)
+                                ?.subtract(7, "hours")
+                                ?.format("DD MMMM YYYY HH:mm")}
+                            </p>
+                            <Link
+                              href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                              className="text-blue-600 hover:underline font-medium lg:text-md text-xs"
+                            >
+                              Baca Selengkapnya
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </section>
 
@@ -414,7 +570,10 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       video_ads,
       categories,
       kurs_dollar,
-      news_today_mobile
+      news_today_mobile,
+      pesona_nusantara_news,
+      international_news,
+      unpopular_news,
     ] = await Promise.all([
       axiosInstance.get(
         `/news?pagination=false&status=publish&breaking_news=1`
@@ -436,6 +595,13 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       axiosInstance.get("/categories"),
       axiosInstance.get(`/kurs?date=${moment().format("YYYY-MM-DD")}`),
       axiosInstance.get(`/news?pagination=true&page=0&size=5&status=publish`),
+      axiosInstance.get(
+        `/news?pagination=true&page=0&size=20&status=publish&category_name=Pesona Nusantara`
+      ),
+      axiosInstance.get(
+        `/news?pagination=true&page=0&size=20&status=publish&category_name=Internasional`
+      ),
+      axiosInstance.get(`/news?pagination=true&status=publish&unpopular=1`),
     ]);
 
     return {
@@ -452,6 +618,9 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         video_ads: video_ads?.data?.items || [],
         tech_news: tech_news.data?.items,
         kurs_dollar: kurs_dollar.data?.items || [],
+        pesona_nusantara_news: pesona_nusantara_news.data?.items || [],
+        international_news: international_news.data?.items || [],
+        unpopular_news: unpopular_news.data?.items || [],
       },
     };
   } catch (error) {
