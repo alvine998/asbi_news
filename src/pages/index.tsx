@@ -248,7 +248,7 @@ const Home: NextPageWithLayout = ({
                 <h2 className="text-2xl font-semibold mb-4 underline">
                   Rekomendasi Berita Untukmu
                 </h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid lg:gap-6 gap-1 md:grid-cols-2 lg:grid-cols-3">
                   {shuffleArray(recommended_news)
                     ?.slice(0, 3)
                     .map((newsItem: any) => (
@@ -261,11 +261,11 @@ const Home: NextPageWithLayout = ({
                           alt={`News ${newsItem?.id}`}
                           className="w-full h-48 object-cover"
                         />
-                        <div className="p-4">
-                          <h3 className="text-lg font-semibold mb-2">
+                        <div className="lg:p-4 p-1 px-2">
+                          <h3 className="text-lg font-semibold mb-1 lg:mb-2">
                             {newsItem?.title}
                           </h3>
-                          <p className="text-gray-600 mb-4">
+                          <p className="text-gray-600 mb-1 lg:mb-4">
                             {newsItem?.description?.substring(0, 100)}...
                           </p>
                           <Link
@@ -316,14 +316,15 @@ const Home: NextPageWithLayout = ({
                   className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
                 >
                   <div className="md:p-2 p-2">
-                    <h3 className="lg:text-lg text-xs font-semibold">
-                      {pesonaNews?.[0]?.title?.substring(0, 50)}...
-                    </h3>
                     <p className="text-gray-600 lg:text-md text-xs">
+                      Pesona Nusantara |{" "}
                       {moment(pesonaNews?.[0]?.published_at)
                         ?.subtract(7, "hours")
                         ?.format("DD MMMM YYYY HH:mm")}
                     </p>
+                    <h3 className="lg:text-lg text-xs font-semibold">
+                      {pesonaNews?.[0]?.title?.substring(0, 50)}...
+                    </h3>
                   </div>
                   <img
                     src={pesonaNews?.[0]?.thumbnail}
@@ -333,7 +334,7 @@ const Home: NextPageWithLayout = ({
                 </Link>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid lg:gap-6 gap-1 md:grid-cols-2 lg:grid-cols-3">
                 {recommended_news?.slice(0, 9).map((newsItem: any) => (
                   <div
                     key={newsItem?.id}
@@ -344,11 +345,11 @@ const Home: NextPageWithLayout = ({
                       alt={`News ${newsItem?.id}`}
                       className="w-full h-48 object-cover"
                     />
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">
+                    <div className="lg:p-4 p-1 px-2">
+                      <h3 className="text-lg font-semibold lg:mb-2 mb-1">
                         {newsItem?.title}
                       </h3>
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-gray-600 lg:mb-4 mb-1">
                         {newsItem?.description?.substring(0, 100)}...
                       </p>
                       <Link
@@ -399,14 +400,15 @@ const Home: NextPageWithLayout = ({
                   className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
                 >
                   <div className="md:p-2 p-2">
-                    <h3 className="lg:text-lg text-xs font-semibold">
-                      {internationalNews?.[0]?.title?.substring(0, 50)}...
-                    </h3>
                     <p className="text-gray-600 lg:text-md text-xs">
+                      Internasional |{" "}
                       {moment(internationalNews?.[0]?.published_at)
                         ?.subtract(7, "hours")
                         ?.format("DD MMMM YYYY HH:mm")}
                     </p>
+                    <h3 className="lg:text-lg text-xs font-semibold">
+                      {internationalNews?.[0]?.title?.substring(0, 50)}...
+                    </h3>
                   </div>
                   <img
                     src={internationalNews?.[0]?.thumbnail}
@@ -423,36 +425,34 @@ const Home: NextPageWithLayout = ({
                 </h2>
                 {unpopular_news?.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {shuffleArray(unpopular_news)
-                      ?.slice(0, 2)
-                      ?.map((newsItem: any) => (
-                        <div
-                          key={newsItem?.id}
-                          className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
-                        >
-                          <img
-                            src={newsItem?.thumbnail}
-                            alt={`News ${newsItem?.id}`}
-                            className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
-                          />
-                          <div className="md:p-2 p-2">
-                            <h3 className="lg:text-lg text-xs font-semibold">
-                              {newsItem?.title?.substring(0, 50)}...
-                            </h3>
-                            <p className="text-gray-600 lg:text-md text-xs">
-                              {moment(newsItem?.published_at)
-                                ?.subtract(7, "hours")
-                                ?.format("DD MMMM YYYY HH:mm")}
-                            </p>
-                            <Link
-                              href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                              className="text-blue-600 hover:underline font-medium lg:text-md text-xs"
-                            >
-                              Baca Selengkapnya
-                            </Link>
-                          </div>
+                    {unpopular_news?.slice(0, 2)?.map((newsItem: any) => (
+                      <div
+                        key={newsItem?.id}
+                        className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
+                      >
+                        <img
+                          src={newsItem?.thumbnail}
+                          alt={`News ${newsItem?.id}`}
+                          className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                        />
+                        <div className="md:p-2 p-2">
+                          <h3 className="lg:text-lg text-xs font-semibold">
+                            {newsItem?.title?.substring(0, 50)}...
+                          </h3>
+                          <p className="text-gray-600 lg:text-md text-xs">
+                            {moment(newsItem?.published_at)
+                              ?.subtract(7, "hours")
+                              ?.format("DD MMMM YYYY HH:mm")}
+                          </p>
+                          <Link
+                            href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                            className="text-blue-600 hover:underline font-medium lg:text-md text-xs"
+                          >
+                            Baca Selengkapnya
+                          </Link>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
