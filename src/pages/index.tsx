@@ -184,11 +184,11 @@ const Home: NextPageWithLayout = ({
                         <h3 className="lg:text-md font-semibold mb-2">
                           {newsItem?.title}
                         </h3>
-                        <p className="text-black mb-2 font-bold text-xs">
+                        {/* <p className="text-black mb-2 font-bold text-xs">
                           {moment(newsItem?.createdAt)
                             ?.subtract(7, "hours")
                             .format("DD MMMM YYYY")}
-                        </p>
+                        </p> */}
                       </div>
                     </Link>
                   ))}
