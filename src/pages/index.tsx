@@ -34,6 +34,7 @@ const Home: NextPageWithLayout = ({
   side_ads,
   video_ads,
   tech_news,
+  news_today_mobile
 }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [kurs, setKurs] = useState<any>({});
@@ -136,7 +137,7 @@ const Home: NextPageWithLayout = ({
                 <h2 className="text-2xl font-semibold mb-4 underline">
                   Berita Terkini
                 </h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="hidden gap-6 md:grid-cols-2 lg:grid-cols-3 lg:grid">
                   {news_today.map((newsItem: any) => (
                     <div
                       key={newsItem}
@@ -155,7 +156,9 @@ const Home: NextPageWithLayout = ({
                           {newsItem?.description?.substring(0, 100)}...
                         </p>
                         <p className="text-black mb-2 font-bold text-xs">
-                          {moment(newsItem?.createdAt)?.subtract(7, "hours").format("DD MMMM YYYY")}
+                          {moment(newsItem?.createdAt)
+                            ?.subtract(7, "hours")
+                            .format("DD MMMM YYYY")}
                         </p>
                         <Link
                           href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
@@ -165,6 +168,29 @@ const Home: NextPageWithLayout = ({
                         </Link>
                       </div>
                     </div>
+                  ))}
+                </div>
+                <div className="flex lg:hidden flex-col gap-2">
+                  {news_today_mobile.map((newsItem: any, idx: number) => (
+                    <Link
+                      href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                      key={newsItem}
+                      className="bg-white shadow-md rounded-lg overflow-hidden flex gap-1 flex-row items-center px-2"
+                    >
+                      <div className="bg-blue-400 rounded-full p-2 items-center justify-center w-[40px] md:w-[40px] sm:w-[40px]">
+                        <p className="text-white text-center">{idx + 1}</p>
+                      </div>
+                      <div className="p-1 w-full">
+                        <h3 className="lg:text-md font-semibold mb-2">
+                          {newsItem?.title}
+                        </h3>
+                        <p className="text-black mb-2 font-bold text-xs">
+                          {moment(newsItem?.createdAt)
+                            ?.subtract(7, "hours")
+                            .format("DD MMMM YYYY")}
+                        </p>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -186,14 +212,16 @@ const Home: NextPageWithLayout = ({
                           <img
                             src={newsItem?.thumbnail}
                             alt={`News ${newsItem?.id}`}
-                            className="w-1/2 lg:w-1/3 md:h-auto h-48 object-cover"
+                            className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                           />
-                          <div className="md:p-2 p-4">
+                          <div className="md:p-2 p-2">
                             <h3 className="lg:text-lg text-xs font-semibold">
                               {newsItem?.title?.substring(0, 50)}...
                             </h3>
                             <p className="text-gray-600 lg:text-md text-xs">
-                              {moment(newsItem?.published_at)?.subtract(7, "hours")?.format("DD MMMM YYYY HH:mm")}
+                              {moment(newsItem?.published_at)
+                                ?.subtract(7, "hours")
+                                ?.format("DD MMMM YYYY HH:mm")}
                             </p>
                             <Link
                               href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
@@ -298,9 +326,9 @@ const Home: NextPageWithLayout = ({
                           {newsItem?.description?.slice(0, 100)}
                         </p>
                         <p className="text-gray-800 font-bold lg:text-md text-xs">
-                          {moment(newsItem?.published_at)?.subtract(7, "hours")?.format(
-                            "DD MMMM YYYY HH:mm"
-                          )}
+                          {moment(newsItem?.published_at)
+                            ?.subtract(7, "hours")
+                            ?.format("DD MMMM YYYY HH:mm")}
                         </p>
                       </Link>
                     ))}
@@ -322,7 +350,11 @@ const Home: NextPageWithLayout = ({
                         {code}
                       </p>
                       <p className="text-black border border-black p-1 w-full">
-                        {formatCurrency(kurs[code?.toLowerCase()], locale, currency)}
+                        {formatCurrency(
+                          kurs[code?.toLowerCase()],
+                          locale,
+                          currency
+                        )}
                       </p>
                     </div>
                   ))}
@@ -382,6 +414,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       video_ads,
       categories,
       kurs_dollar,
+      news_today_mobile
     ] = await Promise.all([
       axiosInstance.get(
         `/news?pagination=false&status=publish&breaking_news=1`
@@ -402,6 +435,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
       axiosInstance.get(`/ads?type=video`),
       axiosInstance.get("/categories"),
       axiosInstance.get(`/kurs?date=${moment().format("YYYY-MM-DD")}`),
+      axiosInstance.get(`/news?pagination=true&page=0&size=5&status=publish`),
     ]);
 
     return {
@@ -409,6 +443,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         breaking_news: breaking_news.data?.items,
         headline_news: headline_news.data?.items,
         news_today: news_today.data?.items,
+        news_today_mobile: news_today_mobile.data?.items,
         recommended_news: recommended_news.data?.items,
         popular_news: popular_news.data?.items,
         categories: categories?.data?.items || [],
