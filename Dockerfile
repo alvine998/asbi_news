@@ -4,7 +4,7 @@ FROM node:18-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json first
 COPY package.json package-lock.json ./
 
 # Install dependencies
@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3008
 
 # Start the Next.js app on port 3008
-CMD ["npm", "run", "start", "-p", "3008"]
+CMD ["npm", "run", "start", "--", "-p", "3008"]
