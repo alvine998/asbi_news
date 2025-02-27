@@ -146,7 +146,7 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
     reader.onloadend = async () => {
       const formData = new FormData();
       formData.append(selected === "video" ? "video" : "image", file);
-      let url = selected === "video" ? "/upload/video" : "/upload/v2";
+      let url = selected === "video" ? "/upload/video" : "/upload";
       const response: any = await axiosInstance.post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -235,7 +235,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                       <>
                         {selected === "video" ? (
                           <a
-                            href={file || undefined}
+                            href={
+                              (file || field.defaultValue)?.includes("https://")
+                                ? file || field.defaultValue
+                                : `https://api.asbinews.com${
+                                    file || field.defaultValue
+                                  }`
+                            }
                             target="_blank"
                             className="text-blue-500"
                           >
@@ -243,7 +249,13 @@ const FormGenerator: React.FC<FormGeneratorProps> = ({
                           </a>
                         ) : (
                           <img
-                            src={file || field.defaultValue}
+                            src={
+                              (file || field.defaultValue)?.includes("https://")
+                                ? file || field.defaultValue
+                                : `https://api.asbinews.com${
+                                    file || field.defaultValue
+                                  }`
+                            }
                             alt="Preview"
                             className="mt-2 w-auto h-auto"
                           />

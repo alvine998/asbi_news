@@ -150,7 +150,9 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           <div className="flex lg:gap-4 gap-2 lg:flex-row flex-col">
             <p className="text-gray-600">
               {news?.author},{" "}
-              {moment(news?.published_at).subtract(7, "hours").format("DD MMMM YYYY HH:mm")}
+              {moment(news?.published_at)
+                .subtract(7, "hours")
+                .format("DD MMMM YYYY HH:mm")}
             </p>
             <div className="flex gap-2 flex-row items-center">
               <EyeIcon className="w-4 h-4 text-gray-600" />
@@ -159,18 +161,20 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           </div>
           <div
             className="text-md mt-4 text-justify text-black ql-editor quill-content prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(news?.content) as string }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(news?.content) as string,
+            }}
           ></div>
 
-          <hr className="mt-8 border-b-2" />
-          <h5 className="text-gray-800 mt-6 text-lg">
+          <hr className="mt-4 border-b-2" />
+          <h5 className="text-gray-800 mt-1 text-lg">
             <strong>Editor</strong>: {news?.editor}
           </h5>
-          <h5 className="text-gray-800 mt-2 text-md">
+          <h5 className="text-gray-800 mt-1 text-md">
             <strong>Sumber</strong>: {news?.source}
           </h5>
-          <p className="mt-2 text-black text-lg">Kata Kunci</p>
-          <div className="flex flex-wrap gap-2 mt-2 mb-8">
+          <p className="mt-1 text-black text-lg">Kata Kunci</p>
+          <div className="flex flex-wrap gap-2 mt-1">
             {keywords?.map((tag: any, index: number) => (
               <span
                 key={index}
@@ -182,36 +186,38 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           </div>
 
           <div>
-            <h2 className="text-2xl font-semibold mb-4 underline">
+            <h2 className="text-2xl font-semibold mb-2 mt-2 underline">
               Berita Lainnya
             </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
               {/* News Card */}
               {shuffleArray(other_news)
-                ?.slice(0, 3)
+                ?.slice(0, 4)
                 .map((newsItem: any) => (
                   <div
                     key={newsItem?.id}
-                    className="bg-white shadow-md rounded-lg overflow-hidden"
+                    className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
                   >
                     <img
-                      src={`${newsItem?.thumbnail}`}
+                      src={newsItem?.thumbnail}
                       alt={`News ${newsItem?.id}`}
-                      className="w-full h-48 object-cover"
+                      className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                     />
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2">
-                        {newsItem?.title}
+                    <div className="p-1">
+                      <h3 className="lg:text-lg text-xs font-semibold">
+                        {newsItem?.title?.substring(0, 100)}...
                       </h3>
-                      <p className="text-gray-600 mb-4">
-                        {newsItem?.description?.slice(0, 100)}
+                      <p className="text-gray-600 lg:text-md text-xs">
+                        {moment(newsItem?.published_at)
+                          ?.subtract(7, "hours")
+                          ?.format("DD MMMM YYYY HH:mm")}
                       </p>
-                      <a
+                      <Link
                         href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
-                        className="text-blue-600 hover:underline font-medium"
+                        className="text-blue-600 hover:underline font-medium lg:text-md text-xs"
                       >
                         Baca Selengkapnya
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -226,17 +232,18 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const { query, params } = context;
   try {
-    const [detail_news, other_news, ads, categories, breaking_news] = await Promise.all([
-      axiosInstance.get(
-        `/news?pagination=true&size=1&status=publish&slug=${query?.slug}`
-      ),
-      axiosInstance.get(`/news?pagination=true&size=20&status=publish`),
-      axiosInstance.get(`/ads?type=header`),
-      axiosInstance.get("/categories"),
-      axiosInstance.get(
-        `/news?pagination=false&status=publish&breaking_news=1`
-      ),
-    ]);
+    const [detail_news, other_news, ads, categories, breaking_news] =
+      await Promise.all([
+        axiosInstance.get(
+          `/news?pagination=true&size=1&status=publish&slug=${query?.slug}`
+        ),
+        axiosInstance.get(`/news?pagination=true&size=20&status=publish`),
+        axiosInstance.get(`/ads?type=header`),
+        axiosInstance.get("/categories"),
+        axiosInstance.get(
+          `/news?pagination=false&status=publish&breaking_news=1`
+        ),
+      ]);
 
     return {
       props: {
