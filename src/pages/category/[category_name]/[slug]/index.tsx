@@ -6,7 +6,7 @@ import { INews } from "@/types/news";
 import { shuffleArray } from "@/utils";
 import DOMPurify from "dompurify";
 import { getDatabase } from "firebase/database";
-import { EyeIcon, FacebookIcon, Share2Icon } from "lucide-react";
+import { EyeIcon, FacebookIcon, PlusIcon, Share2Icon } from "lucide-react";
 import moment from "moment";
 import Head from "next/head";
 import Link from "next/link";
@@ -20,7 +20,11 @@ import axiosInstance from "@/utils/api";
 import axios from "axios";
 import { useRouter } from "next/router";
 
-const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
+const DetailNews: NextPageWithLayout = ({
+  other_news,
+  detail_news,
+  side_ads,
+}: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const pathname = usePathname();
   let news = detail_news;
@@ -143,7 +147,11 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
             {news?.title}
           </h1>
           <img
-            src={news?.thumbnail}
+            src={
+              news?.thumbnail?.includes("https://")
+                ? news?.thumbnail
+                : `${process.env.NEXT_PUBLIC_API_BASE_URL}${news?.thumbnail}`
+            }
             alt={news?.title}
             className="w-full h-full object-cover my-5"
           />
@@ -186,6 +194,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
           </div>
 
           <div>
+            {/* Berita Lainnya */}
             <h2 className="text-2xl font-semibold mb-2 mt-2 underline">
               Berita Lainnya
             </h2>
@@ -199,7 +208,11 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
                     className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
                   >
                     <img
-                      src={newsItem?.thumbnail}
+                      src={
+                        newsItem?.thumbnail?.includes("https://")
+                          ? newsItem?.thumbnail
+                          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                      }
                       alt={`News ${newsItem?.id}`}
                       className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                     />
@@ -222,6 +235,131 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
                   </div>
                 ))}
             </div>
+
+            {/* Baca Juga */}
+            <h2 className="text-2xl font-semibold mb-2 mt-2 underline">
+              Baca Juga
+            </h2>
+            <div className="flex flex-col gap-2 mt-2">
+              {/* Numbering Card */}
+              {shuffleArray(other_news)
+                ?.slice(0, 4)
+                .map((newsItem: any, idx: number) => (
+                  <Link
+                    href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                    key={newsItem}
+                    className="bg-blue-100 shadow-md rounded-lg overflow-hidden flex gap-1 flex-row items-center p-2"
+                  >
+                    <div className="bg-blue-400 rounded-full p-2 items-center justify-center w-[40px] md:w-[40px] sm:w-[40px]">
+                      <p className="text-white text-center">{idx + 1}</p>
+                    </div>
+                    <div className="p-1 w-full mt-1">
+                      <h3 className="lg:text-md font-semibold mb-2">
+                        {newsItem?.title}
+                      </h3>
+                      {/* <p className="text-black mb-2 font-bold text-xs">
+                      {moment(newsItem?.createdAt)
+                        ?.subtract(7, "hours")
+                        .format("DD MMMM YYYY")}
+                    </p> */}
+                    </div>
+                  </Link>
+                ))}
+            </div>
+
+            {/* Ads & Berita Pilihan Harian */}
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-2 items-end">
+              <div>
+                <img
+                  src={
+                    (
+                      shuffleArray(side_ads)?.[0] as { image: string }
+                    )?.image?.includes("https://")
+                      ? (shuffleArray(side_ads)?.[0] as { image: string })
+                          ?.image
+                      : `${process.env.NEXT_PUBLIC_API_BASE_URL}${
+                          (shuffleArray(side_ads)?.[0] as { image: string })
+                            ?.image
+                        }`
+                  }
+                  alt="side ads"
+                  className="mt-10 rounded w-full lg:h-auto h-auto object-cover"
+                />
+              </div>
+              <div>
+                <div className="flex flex-col gap-2 border-2 p-2 rounded">
+                  <div className="flex justify-between items-center">
+                    <h2 className="lg:text-4xl text-xl font-semibold">
+                      Berita Pilihan Harian
+                    </h2>
+                    <PlusIcon />
+                  </div>
+                  {shuffleArray(other_news)
+                    ?.slice(0, 4)
+                    .map((newsItem: any) => (
+                      <div className="border-b-2 pb-2">
+                        {/* Desktop */}
+                        <Link
+                          href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                          className="p-1 bg-gray-300 rounded w-full lg:flex flex-row gap-2 justify-between lg:items-start items-center hidden"
+                        >
+                          <div className="lg:p-2 p-1 w-full">
+                            <p className="lg:text-sm text-xs">
+                              {moment(newsItem?.published_at).format(
+                                "dddd, DD MMMM YYYY HH:mm"
+                              )}
+                            </p>
+                            <p className="lg:text-md text-sm font-bold mt-2">
+                              {newsItem?.title}
+                            </p>
+                            <p className="lg:text-xs">
+                              {newsItem?.description?.substring(0, 100)}
+                              ...
+                            </p>
+                          </div>
+                          <div className="lg:w-1/2 w-full">
+                            <img
+                              src={
+                                newsItem?.thumbnail?.includes("https://")
+                                  ? newsItem?.thumbnail
+                                  : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                              }
+                              alt="pesona"
+                              className="lg:w-auto w-full h-full"
+                            />
+                          </div>
+                        </Link>
+
+                        {/* Mobile */}
+                        <Link
+                          href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                          className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
+                        >
+                          <div className="md:p-2 p-2">
+                            <p className="text-gray-600 lg:text-md text-xs">
+                              {moment(newsItem?.published_at)
+                                ?.subtract(7, "hours")
+                                ?.format("DD MMMM YYYY HH:mm")}
+                            </p>
+                            <h3 className="lg:text-lg text-xs font-semibold">
+                              {newsItem?.title?.substring(0, 50)}...
+                            </h3>
+                          </div>
+                          <img
+                            src={
+                              newsItem?.thumbnail?.includes("https://")
+                                ? newsItem?.thumbnail
+                                : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                            }
+                            alt={`News ${newsItem?.id}`}
+                            className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                          />
+                        </Link>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -232,7 +370,7 @@ const DetailNews: NextPageWithLayout = ({ other_news, detail_news }: any) => {
 export const getServerSideProps: GetServerSideProps = async (context: any) => {
   const { query, params } = context;
   try {
-    const [detail_news, other_news, ads, categories, breaking_news] =
+    const [detail_news, other_news, ads, categories, breaking_news, side_ads] =
       await Promise.all([
         axiosInstance.get(
           `/news?pagination=true&size=1&status=publish&slug=${query?.slug}`
@@ -243,6 +381,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         axiosInstance.get(
           `/news?pagination=false&status=publish&breaking_news=1`
         ),
+        axiosInstance.get(`/ads?type=side`),
       ]);
 
     return {
@@ -252,6 +391,7 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
         categories: categories?.data?.items || [],
         ads: ads?.data?.items || [],
         breaking_news: breaking_news.data?.items,
+        side_ads: side_ads.data?.items,
       },
     };
   } catch (error) {

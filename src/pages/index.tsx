@@ -4,7 +4,7 @@ import Input from "@/components/Input";
 import Layout from "@/components/Layout";
 import Navbar from "@/components/Navbar";
 import BannerSlider from "@/components/Slider";
-import { AlignJustifyIcon } from "lucide-react";
+import { AlignJustifyIcon, PlusIcon } from "lucide-react";
 import Head from "next/head";
 import Link from "next/link";
 import { ReactElement, useEffect, useState } from "react";
@@ -306,7 +306,7 @@ const Home: NextPageWithLayout = ({
                         "dddd, DD MMMM YYYY HH:mm"
                       )}
                     </p>
-                    <p className="lg:text-xl text-sm font-bold mt-2">
+                    <p className="lg:text-2 xl text-sm font-bold mt-2">
                       {pesonaNews?.[0]?.title}
                     </p>
                     <p className="lg:text-md">
@@ -401,7 +401,7 @@ const Home: NextPageWithLayout = ({
                         "dddd, DD MMMM YYYY HH:mm"
                       )}
                     </p>
-                    <p className="lg:text-xl text-sm font-bold mt-2">
+                    <p className="lg:text-2xl text-sm font-bold mt-2">
                       {internationalNews?.[0]?.title}
                     </p>
                     <p className="lg:text-md">
@@ -457,7 +457,7 @@ const Home: NextPageWithLayout = ({
                 </h2>
                 {unpopular_news?.length > 0 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {unpopular_news?.slice(0, 2)?.map((newsItem: any) => (
+                    {unpopular_news?.slice(0, 4)?.map((newsItem: any) => (
                       <div
                         key={newsItem?.id}
                         className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
@@ -570,11 +570,105 @@ const Home: NextPageWithLayout = ({
                         }`
                   }
                   alt="side ads"
-                  className="mt-10 rounded w-full lg:h-auto h-auto object-cover"
+                  className="mt-2 rounded w-full lg:h-auto h-auto object-cover"
                 />
               </div>
 
-              <div className="w-full mt-10">
+              <div className="w-full mt-2">
+                <video
+                  width={500}
+                  height={300}
+                  muted
+                  loop
+                  autoPlay
+                  className="mt-4 rounded"
+                >
+                  <source
+                    src={
+                      (shuffleArray(video_ads)?.[0] as { image: string })?.image
+                    }
+                    type="video/mp4"
+                  />
+                </video>
+              </div>
+
+              {/* Berita Pilihan Harian */}
+              <div>
+                <div className="flex flex-col gap-2 border-2 p-2 rounded">
+                  <div className="flex justify-between items-center">
+                    <h2 className="lg:text-2xl text-xl font-semibold">
+                      Berita Pilihan Harian
+                    </h2>
+                    <PlusIcon />
+                  </div>
+                  {shuffleArray(recommended_news)
+                    ?.slice(0, 4)
+                    .map((newsItem: any) => (
+                      <div className="border-b-2 pb-2">
+                        {/* Desktop */}
+                        <Link
+                          href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                          className="p-1 bg-gray-300 rounded w-full lg:flex flex-row gap-2 justify-between lg:items-start items-center hidden"
+                        >
+                          <div className="lg:p-2 p-1 w-full">
+                            {/* <p className="lg:text-sm text-xs">
+                              {moment(newsItem?.published_at).format(
+                                "dddd, DD MMMM YYYY HH:mm"
+                              )}
+                            </p> */}
+                            <p className="lg:text-xs text-sm font-bold mt-0">
+                              {newsItem?.title}
+                            </p>
+                            {/* <p className="lg:text-xs">
+                              {newsItem?.description?.substring(0, 50)}
+                              ...
+                            </p> */}
+                          </div>
+                          <div className="lg:w-1/2 w-full">
+                            <img
+                              src={
+                                newsItem?.thumbnail?.includes("https://")
+                                  ? newsItem?.thumbnail
+                                  : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                              }
+                              alt="pesona"
+                              className="lg:w-auto w-full h-full"
+                            />
+                          </div>
+                        </Link>
+
+                        {/* Mobile */}
+                        <Link
+                          href={`/category/${newsItem?.category_name}/${newsItem?.slug}`}
+                          className="bg-white shadow-md rounded-lg overflow-hidden lg:hidden flex flex-row"
+                        >
+                          <div className="md:p-2 p-2">
+                            <p className="text-gray-600 lg:text-md text-xs">
+                              {moment(newsItem?.published_at)
+                                ?.subtract(7, "hours")
+                                ?.format("DD MMMM YYYY HH:mm")}
+                            </p>
+                            <h3 className="lg:text-lg text-xs font-semibold">
+                              {newsItem?.title?.substring(0, 50)}...
+                            </h3>
+                          </div>
+                          <img
+                            src={
+                              newsItem?.thumbnail?.includes("https://")
+                                ? newsItem?.thumbnail
+                                : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                            }
+                            alt={`News ${newsItem?.id}`}
+                            className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
+                          />
+                        </Link>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Iklan Layanan Masyarakat */}
+              <div className="w-full mt-2">
                 <video
                   width={500}
                   height={300}

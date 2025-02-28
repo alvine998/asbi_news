@@ -59,7 +59,11 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
                         className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
                       >
                         <img
-                          src={newsItem?.thumbnail}
+                          src={
+                            newsItem?.thumbnail?.includes("https://")
+                              ? newsItem?.thumbnail
+                              : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                          }
                           alt={`News ${newsItem?.id}`}
                           className="w-full lg:w-1/4 h-48 object-cover"
                         />
@@ -189,9 +193,9 @@ const ListCategory: NextPageWithLayout = ({ news, popular_news }: any) => {
                         {newsItem?.description?.slice(0, 100)}
                       </p>
                       <p className="text-gray-800 font-bold lg:text-md text-xs">
-                        {moment(newsItem?.published_at)?.subtract(7, "hours")?.format(
-                          "DD MMMM YYYY HH:mm"
-                        )}
+                        {moment(newsItem?.published_at)
+                          ?.subtract(7, "hours")
+                          ?.format("DD MMMM YYYY HH:mm")}
                       </p>
                     </Link>
                   ))}
