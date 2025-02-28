@@ -151,7 +151,11 @@ const Home: NextPageWithLayout = ({
                       className="bg-white shadow-md rounded-lg overflow-hidden"
                     >
                       <img
-                        src={newsItem?.thumbnail}
+                        src={
+                          newsItem?.thumbnail?.includes("https://")
+                            ? newsItem?.thumbnail
+                            : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                        }
                         alt={`News ${newsItem?.id}`}
                         className="w-full h-48 object-cover"
                       />
@@ -217,7 +221,11 @@ const Home: NextPageWithLayout = ({
                           className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
                         >
                           <img
-                            src={newsItem?.thumbnail}
+                            src={
+                              newsItem?.thumbnail?.includes("https://")
+                                ? newsItem?.thumbnail
+                                : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                            }
                             alt={`News ${newsItem?.id}`}
                             className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                           />
@@ -257,7 +265,11 @@ const Home: NextPageWithLayout = ({
                         className="bg-white shadow-md rounded-lg overflow-hidden"
                       >
                         <img
-                          src={newsItem?.thumbnail}
+                          src={
+                            newsItem?.thumbnail?.includes("https://")
+                              ? newsItem?.thumbnail
+                              : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                          }
                           alt={`News ${newsItem?.id}`}
                           className="w-full h-48 object-cover"
                         />
@@ -303,7 +315,11 @@ const Home: NextPageWithLayout = ({
                   </div>
                   <div className="lg:w-1/2 w-full">
                     <img
-                      src={pesonaNews?.[0]?.thumbnail}
+                      src={
+                        pesonaNews?.[0]?.thumbnail?.includes("https://")
+                          ? pesonaNews?.[0]?.thumbnail
+                          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${pesonaNews?.[0]?.thumbnail}`
+                      }
                       alt="pesona"
                       className="lg:w-auto w-full h-full"
                     />
@@ -327,7 +343,11 @@ const Home: NextPageWithLayout = ({
                     </h3>
                   </div>
                   <img
-                    src={pesonaNews?.[0]?.thumbnail}
+                    src={
+                      pesonaNews?.[0]?.thumbnail?.includes("https://")
+                        ? pesonaNews?.[0]?.thumbnail
+                        : `${process.env.NEXT_PUBLIC_API_BASE_URL}${pesonaNews?.[0]?.thumbnail}`
+                    }
                     alt={`News ${pesonaNews?.[0]?.id}`}
                     className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                   />
@@ -341,7 +361,11 @@ const Home: NextPageWithLayout = ({
                     className="bg-white shadow-md rounded-lg overflow-hidden"
                   >
                     <img
-                      src={newsItem?.thumbnail}
+                      src={
+                        newsItem?.thumbnail?.includes("https://")
+                          ? newsItem?.thumbnail
+                          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                      }
                       alt={`News ${newsItem?.id}`}
                       className="w-full h-48 object-cover"
                     />
@@ -387,7 +411,11 @@ const Home: NextPageWithLayout = ({
                   </div>
                   <div className="lg:w-1/2 w-full">
                     <img
-                      src={internationalNews?.[0]?.thumbnail}
+                      src={
+                        internationalNews?.[0]?.thumbnail?.includes("https://")
+                          ? internationalNews?.[0]?.thumbnail
+                          : `${process.env.NEXT_PUBLIC_API_BASE_URL}${internationalNews?.[0]?.thumbnail}`
+                      }
                       alt="pesona"
                       className="lg:w-auto w-full h-full"
                     />
@@ -411,7 +439,11 @@ const Home: NextPageWithLayout = ({
                     </h3>
                   </div>
                   <img
-                    src={internationalNews?.[0]?.thumbnail}
+                    src={
+                      internationalNews?.[0]?.thumbnail?.includes("https://")
+                        ? internationalNews?.[0]?.thumbnail
+                        : `${process.env.NEXT_PUBLIC_API_BASE_URL}${internationalNews?.[0]?.thumbnail}`
+                    }
                     alt={`News ${internationalNews?.[0]?.id}`}
                     className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                   />
@@ -431,7 +463,11 @@ const Home: NextPageWithLayout = ({
                         className="bg-white shadow-md rounded-lg overflow-hidden flex flex-row"
                       >
                         <img
-                          src={newsItem?.thumbnail}
+                          src={
+                            newsItem?.thumbnail?.includes("https://")
+                              ? newsItem?.thumbnail
+                              : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
+                          }
                           alt={`News ${newsItem?.id}`}
                           className="w-1/2 lg:w-1/3 md:h-auto h-auto object-cover"
                         />
@@ -523,7 +559,15 @@ const Home: NextPageWithLayout = ({
               <div>
                 <img
                   src={
-                    (shuffleArray(side_ads)?.[0] as { image: string })?.image
+                    (
+                      shuffleArray(side_ads)?.[0] as { image: string }
+                    )?.image?.includes("https://")
+                      ? (shuffleArray(side_ads)?.[0] as { image: string })
+                          ?.image
+                      : `${process.env.NEXT_PUBLIC_API_BASE_URL}${
+                          (shuffleArray(side_ads)?.[0] as { image: string })
+                            ?.image
+                        }`
                   }
                   alt="side ads"
                   className="mt-10 rounded w-full lg:h-auto h-auto object-cover"

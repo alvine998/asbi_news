@@ -8,7 +8,7 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
   const [isClient, setIsClient] = useState<boolean>(false); // State to check if it's the client
 
   useEffect(() => {
-    if(typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       setIsClient(true);
     }
   }, []);
@@ -30,7 +30,11 @@ const BannerSlider = ({ banners }: { banners: any[] }) => {
           {banners?.map((banner) => (
             <Link key={banner.id} href={banner?.link} className="block w-full">
               <img
-                src={banner.thumbnail}
+                src={
+                  banner?.thumbnail?.includes("https://")
+                    ? banner?.thumbnail
+                    : `${process.env.NEXT_PUBLIC_API_BASE_URL}${banner?.thumbnail}`
+                }
                 alt={`Banner ${banner.id}`}
                 className="w-full lg:h-[500px] h-[200px] object-cover"
               />
