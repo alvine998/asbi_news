@@ -172,7 +172,7 @@ const Ads: NextPageWithLayout = ({ table, filters }: any) => {
               Lihat Video
             </a>
           ) : (
-            <img src={row.image} alt="image" className="w-20 h-20" />
+            <img src={row.image?.includes("https://") ? row.image : `https://api.asbinews.com${row.image}`} alt="image" className="w-20 h-20" />
           )}
         </>
       ),
