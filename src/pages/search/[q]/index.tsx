@@ -18,7 +18,7 @@ import React, { ReactElement, useEffect, useState } from "react";
  *
  * @returns The component for the index page.
  */
-const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
+const SearchNews: NextPageWithLayout = ({ news, popular_news }: any) => {
   const params: any = useParams();
   const router = useRouter();
   const [page, setPage] = useState<any>(router.query?.page || "1");
@@ -36,7 +36,6 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
   const handleRowsPerPageChange = (rowsPerPage: number) => {
     setItemsPerPage(rowsPerPage);
     setCurrentPage(1); // Reset to the first page on rows change
-    
   };
 
   return (
@@ -61,7 +60,11 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
                         className="bg-white shadow-md rounded-lg overflow-hidden flex lg:flex-row flex-col"
                       >
                         <img
-                          src={newsItem?.thumbnail}
+                          src={
+                            newsItem?.thumbnail?.includes("https://")
+                              ? newsItem?.thumbnail
+                              : `https://${newsItem?.thumbnail}`
+                          }
                           alt={`News ${newsItem?.id}`}
                           className="w-full lg:w-1/4 h-48 object-cover"
                         />
@@ -162,7 +165,9 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
                   )}
                 </>
               ) : (
-                <h2 className="mt-2 text-2xl text-black ">Berita Tidak Ditemukan</h2>
+                <h2 className="mt-2 text-2xl text-black ">
+                  Berita Tidak Ditemukan
+                </h2>
               )}
             </div>
           </section>
@@ -191,9 +196,9 @@ const SearchNews: NextPageWithLayout = ({news, popular_news}: any) => {
                         {newsItem?.description?.slice(0, 100)}
                       </p>
                       <p className="text-gray-800 font-bold lg:text-md text-xs">
-                        {moment(newsItem?.published_at)?.subtract(7, "hours")?.format(
-                          "DD MMMM YYYY HH:mm"
-                        )}
+                        {moment(newsItem?.published_at)
+                          ?.subtract(7, "hours")
+                          ?.format("DD MMMM YYYY HH:mm")}
                       </p>
                     </Link>
                   ))}
@@ -212,7 +217,9 @@ export const getServerSideProps: GetServerSideProps = async (context: any) => {
   try {
     const [news, popular_news, ads, categories] = await Promise.all([
       axiosInstance.get(
-        `/news?pagination=true&size=${query?.size || 10}&status=publish&search=${params?.q}`
+        `/news?pagination=true&size=${
+          query?.size || 10
+        }&status=publish&search=${params?.q}`
       ),
       axiosInstance.get(`/news?pagination=false&status=publish&popular=1`),
       axiosInstance.get(`/ads?type=header`),
