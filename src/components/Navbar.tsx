@@ -171,9 +171,9 @@ export default function Navbar({ categories, ads }: Props) {
             ) : (
               <img
                 src={
-                  ads?.[0]?.image?.includes("https://")
-                    ? ads?.[0]?.image
-                    : `https://api.asbinews.com${ads?.[0]?.image}`
+                  shuffleArray(ads)?.[0]?.image?.includes("https://")
+                    ? shuffleArray(ads)?.[0]?.image
+                    : `https://api.asbinews.com${shuffleArray(ads)?.[0]?.image}`
                 }
                 alt="ads"
                 className="w-full lg:h-[250px] h-[100px] rounded"
