@@ -58,7 +58,7 @@ export default function Navbar({ categories, ads }: Props) {
     };
   }, []);
 
-  const [query, setQuery] = useState<string>(params?.q as string || "");
+  const [query, setQuery] = useState<string>((params?.q as string) || "");
 
   const handleSearch = () => {
     // Call your search function or API here
@@ -170,7 +170,11 @@ export default function Navbar({ categories, ads }: Props) {
               <Loader />
             ) : (
               <img
-                src={shuffleArray(ads)?.[0]?.image}
+                src={
+                  shuffleArray(ads)?.[0]?.image?.includes("https://")
+                    ? shuffleArray(ads)?.[0]?.image
+                    : `${process.env.NEXT_PUBLIC_API_BASE_URL}${shuffleArray(ads)?.[0]?.image}`
+                }
                 alt="ads"
                 className="w-full lg:h-[250px] h-[100px] rounded"
               />

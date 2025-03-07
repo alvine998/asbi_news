@@ -63,7 +63,7 @@ const SearchNews: NextPageWithLayout = ({ news, popular_news }: any) => {
                           src={
                             newsItem?.thumbnail?.includes("https://")
                               ? newsItem?.thumbnail
-                              : `https://${newsItem?.thumbnail}`
+                              : `${process.env.NEXT_PUBLIC_API_BASE_URL}${newsItem?.thumbnail}`
                           }
                           alt={`News ${newsItem?.id}`}
                           className="w-full lg:w-1/4 h-48 object-cover"
